@@ -10,17 +10,18 @@ import Footer from "./components/Footer";
 import Header from "./components/Header";
 import HeroSection from "./components/HeroSection";
 import HowItWorks from "./components/HowItWorks";
+import MyOrders from "./components/MyOrders";
 import ProductsSection from "./components/ProductsSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import WhyChooseUs from "./components/WhyChooseUs";
-import { useCart } from "./hooks/useQueries";
+import { useLocalCart } from "./hooks/useLocalCart";
 
 export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
-  const [hash, setHash] = useState(window.location.hash);
-  const { data: cart } = useCart();
-  const cartCount =
-    cart?.items?.reduce((sum, item) => sum + Number(item.quantity), 0) ?? 0;
+  const [ordersOpen, setOrdersOpen] = useState(false);
+  const [hash, setHash] = useState(() => window.location.hash);
+  const [searchQuery, setSearchQuery] = useState("");
+  const cart = useLocalCart();
 
   useEffect(() => {
     const handleHashChange = () => setHash(window.location.hash);
@@ -48,14 +49,19 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background font-hindi">
       <AnnouncementBar />
-      <Header cartCount={cartCount} onCartOpen={() => setCartOpen(true)} />
+      <Header
+        cartCount={cart.cartCount}
+        onCartOpen={() => setCartOpen(true)}
+        onSearch={setSearchQuery}
+        onOrdersOpen={() => setOrdersOpen(true)}
+      />
       <main>
         <HeroSection
           onShopClick={scrollToProducts}
           onConsultClick={scrollToContact}
         />
         <WhyChooseUs />
-        <ProductsSection />
+        <ProductsSection searchQuery={searchQuery} cart={cart} />
         <BenefitsSection />
         <HowItWorks />
         <TestimonialsSection />
@@ -63,7 +69,12 @@ export default function App() {
         <ConsultationForm />
       </main>
       <Footer />
-      <CartSidebar open={cartOpen} onClose={() => setCartOpen(false)} />
+      <CartSidebar
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        cart={cart}
+      />
+      <MyOrders open={ordersOpen} onClose={() => setOrdersOpen(false)} />
       <Toaster position="top-right" richColors />
     </div>
   );

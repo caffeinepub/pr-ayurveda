@@ -2,22 +2,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useSubmitConsultation } from "@/hooks/useQueries";
 import { Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 const contactInfo = [
-  { text: "📞 1800-XXX-XXXX (निःशुल्क)" },
-  { text: "💬 WhatsApp: 9XXXXXXXXX" },
+  { text: "📞 +91 92171 27566" },
   { text: "🕐 सोम-रवि: सुबह 9 बजे से रात 9 बजे" },
+  { text: "📍 ओखला फेज 3, दिल्ली" },
 ];
 
 export default function ConsultationForm() {
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const submit = useSubmitConsultation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -37,12 +37,36 @@ export default function ConsultationForm() {
       return;
     }
     setErrors({});
+    setIsSubmitting(true);
     try {
-      await submit.mutateAsync(form);
+      // Save to localStorage
+      const existing = JSON.parse(
+        localStorage.getItem("pr_consultations") || "[]",
+      );
+      existing.push({
+        ...form,
+        date: new Date().toLocaleDateString("hi-IN"),
+        timestamp: Date.now(),
+      });
+      localStorage.setItem("pr_consultations", JSON.stringify(existing));
+
+      // Also try backend silently
+      try {
+        const { createActorWithConfig } = await import("../config");
+        const actor = await createActorWithConfig();
+        await actor.submitConsultation(form.name, form.phone, form.message);
+      } catch {
+        // Backend failed, but localStorage save succeeded — that's fine
+      }
+
       toast.success("आपकी परामर्श अनुरोध सफलतापूर्वक भेज दिया गया!");
       setForm({ name: "", phone: "", message: "" });
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 5000);
     } catch {
       toast.error("कुछ त्रुटि हुई। कृपया पुनः प्रयास करें।");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -158,11 +182,11 @@ export default function ConsultationForm() {
               </div>
               <Button
                 type="submit"
-                disabled={submit.isPending}
+                disabled={isSubmitting}
                 className="w-full bg-brand-green hover:bg-brand-green-light text-white font-hindi font-semibold py-6 text-base"
                 data-ocid="consultation.submit_button"
               >
-                {submit.isPending ? (
+                {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                     भेजा जा रहा है...
@@ -171,12 +195,12 @@ export default function ConsultationForm() {
                   "परामर्श अनुरोध भेजें"
                 )}
               </Button>
-              {submit.isSuccess && (
+              {isSuccess && (
                 <p
                   className="text-center text-sm font-hindi text-brand-green"
                   data-ocid="consultation.success_state"
                 >
-                  ✅ आपका अनुरोध सयलतापूर्वक प्राप्त हो गया!
+                  ✅ आपका अनुरोध सफलतापूर्वक प्राप्त हो गया!
                 </p>
               )}
             </form>

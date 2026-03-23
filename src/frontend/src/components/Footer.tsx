@@ -9,6 +9,7 @@ import {
   Youtube,
 } from "lucide-react";
 import { useState } from "react";
+import ReturnPolicyModal from "./ReturnPolicyModal";
 
 const socialLinks = [
   { icon: Facebook, label: "Facebook", href: "https://facebook.com" },
@@ -19,6 +20,7 @@ const socialLinks = [
 
 export default function Footer() {
   const [email, setEmail] = useState("");
+  const [returnPolicyOpen, setReturnPolicyOpen] = useState(false);
   const year = new Date().getFullYear();
 
   const scrollTo = (href: string) => {
@@ -156,15 +158,51 @@ export default function Footer() {
                 सहायता
               </h4>
               <ul className="space-y-1">
-                {["FAQ", "रिटर्न पॉलिसी", "प्राइवेसी पॉलिसी", "संपर्क करें"].map(
-                  (item) => (
-                    <li key={item}>
-                      <span className="font-hindi text-white/70 text-sm">
-                        {item}
-                      </span>
-                    </li>
-                  ),
-                )}
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollTo("#faq")}
+                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors"
+                  >
+                    FAQ
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => setReturnPolicyOpen(true)}
+                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors underline-offset-2 hover:underline"
+                    data-ocid="footer.return_policy.link"
+                  >
+                    रिटर्न पॉलिसी
+                  </button>
+                </li>
+                <li>
+                  <span className="font-hindi text-white/70 text-sm">
+                    प्राइवेसी पॉलिसी
+                  </span>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => scrollTo("#contact")}
+                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors"
+                  >
+                    संपर्क करें
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      window.location.hash = "admin";
+                    }}
+                    className="font-hindi text-white/40 hover:text-brand-gold text-sm transition-colors"
+                    data-ocid="footer.admin.link"
+                  >
+                    एडमिन लॉगिन
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -189,6 +227,11 @@ export default function Footer() {
           </p>
         </div>
       </div>
+
+      <ReturnPolicyModal
+        open={returnPolicyOpen}
+        onClose={() => setReturnPolicyOpen(false)}
+      />
     </footer>
   );
 }

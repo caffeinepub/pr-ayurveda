@@ -7,9 +7,11 @@ import {
   ArrowLeft,
   CheckCircle,
   Clock,
+  CreditCard,
   Eye,
   EyeOff,
   Leaf,
+  MapPin,
   Package,
   Pencil,
   Phone,
@@ -21,10 +23,8 @@ import {
   X,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { staticProducts } from "../data/staticData";
-import { useActor } from "../hooks/useActor";
-import { useConsultations, useOrders } from "../hooks/useQueries";
 
 const STATUSES = ["लंबित", "प्रोसेसिंग", "डिलीवर्ड"] as const;
 type Status = (typeof STATUSES)[number];
@@ -33,17 +33,6 @@ function statusColor(s: Status) {
   if (s === "लंबित") return "bg-yellow-100 text-yellow-800 border-yellow-200";
   if (s === "प्रोसेसिंग") return "bg-blue-100 text-blue-800 border-blue-200";
   return "bg-green-100 text-green-800 border-green-200";
-}
-
-function formatDate(ts: bigint) {
-  const ms = Number(ts) / 1_000_000;
-  return new Date(ms).toLocaleDateString("hi-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 // ─── Login Gate ──────────────────────────────────────────────────────────────
@@ -63,7 +52,7 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
 
   const goToMain = () => {
     window.location.hash = "";
-    window.location.href = window.location.href.replace(/#.*$/, "");
+    window.location.reload();
   };
 
   return (
@@ -177,87 +166,63 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
   );
 }
 
-// ─── Loading Indicator ────────────────────────────────────────────────────────
-function LoadingSpinner({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4">
-      <div
-        className="animate-spin w-10 h-10 rounded-full border-4"
-        style={{
-          borderColor: "oklch(0.30 0.06 152)",
-          borderTopColor: "oklch(0.68 0.11 75)",
-        }}
-      />
-      <p
-        className="font-hindi text-sm"
-        style={{ color: "oklch(0.55 0.04 152)" }}
-      >
-        {label}
-      </p>
-    </div>
-  );
+// ─── Local Order Type ─────────────────────────────────────────────────────────
+interface LocalOrder {
+  orderNo: string;
+  date: string;
+  items: { name: string; qty: number; price: number }[];
+  total: number;
+  address: string;
+  phone: string;
+  name: string;
+  payment: string;
+  status: string;
 }
 
-// ─── Actor Loading Gate ───────────────────────────────────────────────────────
-function ActorGate({ children }: { children: React.ReactNode }) {
-  const { actor, isFetching } = useActor();
-
-  if (!actor && isFetching) {
-    return <LoadingSpinner label="बैकएंड से जुड़ रहे हैं..." />;
-  }
-
-  if (!actor && !isFetching) {
-    return (
-      <div className="text-center py-16">
-        <p className="font-hindi" style={{ color: "oklch(0.65 0.22 27)" }}>
-          ⚠️ बैकएंड से कनेक्ट नहीं हो सका। पेज रिफ्रेश करें।
-        </p>
-        <Button
-          className="mt-4 font-hindi"
-          style={{
-            background: "oklch(0.27 0.065 152)",
-            color: "oklch(0.96 0.01 80)",
-          }}
-          onClick={() => window.location.reload()}
-        >
-          पेज रिफ्रेश करें
-        </Button>
-      </div>
-    );
-  }
-
-  return <>{children}</>;
+interface LocalConsultation {
+  name: string;
+  phone: string;
+  message: string;
+  date: string;
+  timestamp: number;
 }
 
 // ─── Orders Tab ───────────────────────────────────────────────────────────────
 function OrdersTab() {
-  const { data: orders = [], isLoading, isError } = useOrders();
+  const [orders, setOrders] = useState<LocalOrder[]>([]);
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
 
-  const getStatus = (idx: number): Status => {
-    const key = String(idx);
-    return statuses[key] ?? STATUSES[idx % 3];
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("pr_orders");
+      if (raw) {
+        const parsed = JSON.parse(raw) as LocalOrder[];
+        setOrders(parsed.reverse()); // newest first
+      }
+    } catch {
+      setOrders([]);
+    }
+  }, []);
+
+  const getStatus = (orderNo: string, defaultStatus: string): Status => {
+    return (statuses[orderNo] as Status) ?? (defaultStatus as Status) ?? "लंबित";
   };
 
-  const cycleStatus = (idx: number) => {
-    const cur = getStatus(idx);
-    const next = STATUSES[(STATUSES.indexOf(cur) + 1) % STATUSES.length];
-    setStatuses((prev) => ({ ...prev, [String(idx)]: next }));
+  const cycleStatus = (orderNo: string, current: Status) => {
+    const next = STATUSES[(STATUSES.indexOf(current) + 1) % STATUSES.length];
+    setStatuses((prev) => ({ ...prev, [orderNo]: next }));
+    // Also update in localStorage
+    try {
+      const raw = localStorage.getItem("pr_orders");
+      if (raw) {
+        const parsed = JSON.parse(raw) as LocalOrder[];
+        const updated = parsed.map((o) =>
+          o.orderNo === orderNo ? { ...o, status: next } : o,
+        );
+        localStorage.setItem("pr_orders", JSON.stringify(updated));
+      }
+    } catch {}
   };
-
-  if (isLoading) {
-    return <LoadingSpinner label="ऑर्डर लोड हो रहे हैं..." />;
-  }
-
-  if (isError) {
-    return (
-      <div data-ocid="orders.error_state" className="text-center py-16">
-        <p className="font-hindi" style={{ color: "oklch(0.65 0.22 27)" }}>
-          ⚠️ ऑर्डर लोड करने में समस्या हुई। पेज रिफ्रेश करें।
-        </p>
-      </div>
-    );
-  }
 
   if (!orders.length) {
     return (
@@ -285,10 +250,10 @@ function OrdersTab() {
   return (
     <div className="space-y-3">
       {orders.map((order, idx) => {
-        const status = getStatus(idx);
+        const status = getStatus(order.orderNo, order.status);
         return (
           <motion.div
-            key={String(order.orderId)}
+            key={order.orderNo}
             data-ocid={`orders.item.${idx + 1}`}
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
@@ -310,7 +275,7 @@ function OrdersTab() {
                     className="font-semibold font-hindi"
                     style={{ color: "oklch(0.96 0.01 80)" }}
                   >
-                    ऑर्डर #{String(order.orderId)}
+                    ऑर्डर #{order.orderNo}
                   </span>
                 </div>
                 <div
@@ -318,7 +283,7 @@ function OrdersTab() {
                   style={{ color: "oklch(0.65 0.03 152)" }}
                 >
                   <Clock className="w-3.5 h-3.5" />
-                  <span>{formatDate(order.timestamp)}</span>
+                  <span>{order.date}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -354,44 +319,86 @@ function OrdersTab() {
                     color: "oklch(0.75 0.04 152)",
                     background: "oklch(0.22 0.045 152)",
                   }}
-                  onClick={() => cycleStatus(idx)}
+                  onClick={() => cycleStatus(order.orderNo, status)}
                 >
                   स्थिति अपडेट करें
                 </Button>
               </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-4 text-sm">
-              <div style={{ color: "oklch(0.75 0.04 152)" }}>
-                <span className="font-hindi">आइटम: </span>
+
+            {/* Customer info */}
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div
+                className="flex items-center gap-2 text-sm"
+                style={{ color: "oklch(0.75 0.04 152)" }}
+              >
+                <Users
+                  className="w-3.5 h-3.5 shrink-0"
+                  style={{ color: "oklch(0.68 0.11 75)" }}
+                />
                 <span
-                  className="font-semibold"
+                  className="font-hindi font-semibold"
                   style={{ color: "oklch(0.96 0.01 80)" }}
                 >
-                  {order.items.length}
+                  {order.name}
                 </span>
               </div>
-              <div style={{ color: "oklch(0.75 0.04 152)" }}>
+              <div
+                className="flex items-center gap-2 text-sm"
+                style={{ color: "oklch(0.75 0.04 152)" }}
+              >
+                <Phone
+                  className="w-3.5 h-3.5 shrink-0"
+                  style={{ color: "oklch(0.68 0.11 75)" }}
+                />
+                <span className="font-hindi">{order.phone}</span>
+              </div>
+              <div
+                className="flex items-start gap-2 text-sm sm:col-span-2"
+                style={{ color: "oklch(0.75 0.04 152)" }}
+              >
+                <MapPin
+                  className="w-3.5 h-3.5 shrink-0 mt-0.5"
+                  style={{ color: "oklch(0.68 0.11 75)" }}
+                />
+                <span className="font-hindi">{order.address}</span>
+              </div>
+              <div
+                className="flex items-center gap-2 text-sm"
+                style={{ color: "oklch(0.75 0.04 152)" }}
+              >
+                <CreditCard
+                  className="w-3.5 h-3.5 shrink-0"
+                  style={{ color: "oklch(0.68 0.11 75)" }}
+                />
+                <span className="font-hindi">{order.payment}</span>
+              </div>
+              <div
+                style={{ color: "oklch(0.75 0.04 152)" }}
+                className="flex items-center gap-2 text-sm"
+              >
                 <span className="font-hindi">कुल: </span>
                 <span
                   className="font-semibold"
                   style={{ color: "oklch(0.68 0.11 75)" }}
                 >
-                  ₹{Number(order.totalPrice).toLocaleString("hi-IN")}
+                  ₹{order.total.toLocaleString("hi-IN")}
                 </span>
               </div>
             </div>
+
             {order.items.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-1.5">
-                {order.items.map((item) => (
+                {order.items.map((item, i) => (
                   <span
-                    key={String(item.productId)}
+                    key={`${item.name}-${i}`}
                     className="text-xs px-2 py-0.5 rounded-md font-hindi"
                     style={{
                       background: "oklch(0.23 0.055 152)",
                       color: "oklch(0.75 0.04 152)",
                     }}
                   >
-                    उत्पाद #{String(item.productId)} × {String(item.quantity)}
+                    {item.name} × {item.qty}
                   </span>
                 ))}
               </div>
@@ -405,8 +412,20 @@ function OrdersTab() {
 
 // ─── Consultations Tab ────────────────────────────────────────────────────────
 function ConsultationsTab() {
-  const { data: consultations = [], isLoading, isError } = useConsultations();
+  const [consultations, setConsultations] = useState<LocalConsultation[]>([]);
   const [seen, setSeen] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("pr_consultations");
+      if (raw) {
+        const parsed = JSON.parse(raw) as LocalConsultation[];
+        setConsultations([...parsed].reverse());
+      }
+    } catch {
+      setConsultations([]);
+    }
+  }, []);
 
   const toggleSeen = (idx: number) => {
     setSeen((prev) => {
@@ -416,20 +435,6 @@ function ConsultationsTab() {
       return next;
     });
   };
-
-  if (isLoading) {
-    return <LoadingSpinner label="परामर्श अनुरोध लोड हो रहे हैं..." />;
-  }
-
-  if (isError) {
-    return (
-      <div data-ocid="consultations.error_state" className="text-center py-16">
-        <p className="font-hindi" style={{ color: "oklch(0.65 0.22 27)" }}>
-          ⚠️ परामर्श लोड करने में समस्या हुई। पेज रिफ्रेश करें।
-        </p>
-      </div>
-    );
-  }
 
   if (!consultations.length) {
     return (
@@ -458,7 +463,7 @@ function ConsultationsTab() {
     <div className="space-y-3">
       {consultations.map((c, idx) => (
         <motion.div
-          key={`${c.name}-${String(c.timestamp)}`}
+          key={`${c.name}-${c.timestamp}`}
           data-ocid={`consultations.item.${idx + 1}`}
           initial={{ opacity: 0, x: -12 }}
           animate={{ opacity: 1, x: 0 }}
@@ -501,7 +506,7 @@ function ConsultationsTab() {
               </div>
             </div>
             <div className="text-xs" style={{ color: "oklch(0.55 0.04 152)" }}>
-              {formatDate(c.timestamp)}
+              {c.date}
             </div>
           </div>
           <p
@@ -790,9 +795,27 @@ function ProductsTab() {
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [orderCount, setOrderCount] = useState(0);
+  const [consultCount, setConsultCount] = useState(0);
+
+  useEffect(() => {
+    if (loggedIn) {
+      try {
+        const orders = JSON.parse(
+          localStorage.getItem("pr_orders") || "[]",
+        ) as unknown[];
+        setOrderCount(orders.length);
+        const consults = JSON.parse(
+          localStorage.getItem("pr_consultations") || "[]",
+        ) as unknown[];
+        setConsultCount(consults.length);
+      } catch {}
+    }
+  }, [loggedIn]);
 
   const goToMain = () => {
-    window.location.href = window.location.href.replace(/#.*$/, "");
+    window.location.hash = "";
+    window.location.reload();
   };
 
   if (!loggedIn) {
@@ -843,7 +866,7 @@ export default function AdminDashboard() {
             onClick={goToMain}
           >
             <ArrowLeft className="w-4 h-4" />
-            मुख्य साइट पर जाएं
+            मुख्य साइट
           </button>
           <Button
             data-ocid="admin.secondary_button"
@@ -863,10 +886,25 @@ export default function AdminDashboard() {
         {/* Stats Row */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[
-            { icon: ShoppingBag, label: "ऑर्डर्स", color: "oklch(0.68 0.11 75)" },
-            { icon: Users, label: "परामर्श", color: "oklch(0.55 0.18 250)" },
-            { icon: Package, label: "प्रोडक्ट्स", color: "oklch(0.55 0.17 160)" },
-          ].map(({ icon: Icon, label, color }) => (
+            {
+              icon: ShoppingBag,
+              label: "ऑर्डर्स",
+              count: orderCount,
+              color: "oklch(0.68 0.11 75)",
+            },
+            {
+              icon: Users,
+              label: "परामर्श",
+              count: consultCount,
+              color: "oklch(0.55 0.18 250)",
+            },
+            {
+              icon: Package,
+              label: "प्रोडक्ट्स",
+              count: staticProducts.length,
+              color: "oklch(0.55 0.17 160)",
+            },
+          ].map(({ icon: Icon, label, count, color }) => (
             <Card
               key={label}
               className="border-0"
@@ -879,12 +917,20 @@ export default function AdminDashboard() {
                 >
                   <Icon className="w-5 h-5" style={{ color }} />
                 </div>
-                <span
-                  className="text-sm font-hindi font-semibold"
-                  style={{ color: "oklch(0.75 0.04 152)" }}
-                >
-                  {label}
-                </span>
+                <div>
+                  <p
+                    className="text-lg font-bold font-hindi"
+                    style={{ color: "oklch(0.96 0.01 80)" }}
+                  >
+                    {count}
+                  </p>
+                  <p
+                    className="text-xs font-hindi"
+                    style={{ color: "oklch(0.65 0.04 152)" }}
+                  >
+                    {label}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           ))}
@@ -920,14 +966,10 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="orders">
-            <ActorGate>
-              <OrdersTab />
-            </ActorGate>
+            <OrdersTab />
           </TabsContent>
           <TabsContent value="consultations">
-            <ActorGate>
-              <ConsultationsTab />
-            </ActorGate>
+            <ConsultationsTab />
           </TabsContent>
           <TabsContent value="products">
             <ProductsTab />

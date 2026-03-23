@@ -120,8 +120,6 @@ export function useSubmitConsultation() {
   });
 }
 
-// Admin queries — only require actor to be present (not isFetching)
-// This prevents indefinite loading when actor is already available
 export function useOrders() {
   const { actor } = useActor();
   return useQuery<Order[]>({

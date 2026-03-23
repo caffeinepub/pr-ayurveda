@@ -8,7 +8,7 @@ import {
   Twitter,
   Youtube,
 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ReturnPolicyModal from "./ReturnPolicyModal";
 
 const socialLinks = [
@@ -18,14 +18,33 @@ const socialLinks = [
   { icon: Twitter, label: "Twitter", href: "https://twitter.com" },
 ];
 
-export default function Footer() {
+interface FooterProps {
+  onAdminOpen: () => void;
+}
+
+export default function Footer({ onAdminOpen }: FooterProps) {
   const [email, setEmail] = useState("");
   const [returnPolicyOpen, setReturnPolicyOpen] = useState(false);
   const year = new Date().getFullYear();
+  const clickCountRef = useRef(0);
+  const clickTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scrollTo = (href: string) => {
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Secret: click copyright text 5 times quickly to open admin
+  const handleSecretClick = () => {
+    clickCountRef.current += 1;
+    if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
+    clickTimerRef.current = setTimeout(() => {
+      clickCountRef.current = 0;
+    }, 3000);
+    if (clickCountRef.current >= 5) {
+      clickCountRef.current = 0;
+      onAdminOpen();
+    }
   };
 
   return (
@@ -171,7 +190,7 @@ export default function Footer() {
                   <button
                     type="button"
                     onClick={() => setReturnPolicyOpen(true)}
-                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors underline-offset-2 hover:underline"
+                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors hover:underline"
                     data-ocid="footer.return_policy.link"
                   >
                     रिटर्न पॉलिसी
@@ -191,18 +210,6 @@ export default function Footer() {
                     संपर्क करें
                   </button>
                 </li>
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      window.location.hash = "admin";
-                    }}
-                    className="font-hindi text-white/40 hover:text-brand-gold text-sm transition-colors"
-                    data-ocid="footer.admin.link"
-                  >
-                    एडमिन लॉगिन
-                  </button>
-                </li>
               </ul>
             </div>
           </div>
@@ -211,9 +218,14 @@ export default function Footer() {
 
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="font-hindi text-white/60 text-sm text-center">
+          {/* Secret 5-click to open admin — no visible indicator */}
+          <button
+            type="button"
+            className="font-hindi text-white/60 text-sm text-center cursor-default select-none bg-transparent border-0 p-0"
+            onClick={handleSecretClick}
+          >
             © {year} PR Ayurveda. सर्वाधिकार सुरक्षित।
-          </p>
+          </button>
           <p className="text-white/50 text-sm text-center">
             Built with ❤️ using{" "}
             <a

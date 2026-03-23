@@ -39,7 +39,7 @@ export default function ConsultationForm() {
     setErrors({});
     setIsSubmitting(true);
     try {
-      // Save to localStorage
+      // Save to localStorage only — no backend calls
       const existing = JSON.parse(
         localStorage.getItem("pr_consultations") || "[]",
       );
@@ -49,15 +49,6 @@ export default function ConsultationForm() {
         timestamp: Date.now(),
       });
       localStorage.setItem("pr_consultations", JSON.stringify(existing));
-
-      // Also try backend silently
-      try {
-        const { createActorWithConfig } = await import("../config");
-        const actor = await createActorWithConfig();
-        await actor.submitConsultation(form.name, form.phone, form.message);
-      } catch {
-        // Backend failed, but localStorage save succeeded — that's fine
-      }
 
       toast.success("आपकी परामर्श अनुरोध सफलतापूर्वक भेज दिया गया!");
       setForm({ name: "", phone: "", message: "" });

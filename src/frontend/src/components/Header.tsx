@@ -75,11 +75,11 @@ export default function Header({
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-brand-green rounded-full flex items-center justify-center">
-              <span className="text-brand-cream-DEFAULT text-xs font-bold">
-                PR
-              </span>
-            </div>
+            <img
+              src="/assets/generated/pr-ayurveda-logo-transparent.dim_400x400.png"
+              alt="PR Ayurveda Logo"
+              className="w-12 h-12 object-contain"
+            />
             <div>
               <div className="font-playfair font-bold text-brand-green text-lg leading-tight tracking-wider">
                 PR AYURVEDA

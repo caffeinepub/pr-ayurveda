@@ -1,9 +1,45 @@
+import { useEffect, useState } from "react";
+
+function getInitialTime() {
+  const stored = sessionStorage.getItem("flash_sale_end");
+  if (stored) {
+    const remaining = Math.floor((Number(stored) - Date.now()) / 1000);
+    if (remaining > 0) return remaining;
+  }
+  const end = Date.now() + 2 * 60 * 60 * 1000;
+  sessionStorage.setItem("flash_sale_end", String(end));
+  return 2 * 60 * 60;
+}
+
 export default function AnnouncementBar() {
+  const [seconds, setSeconds] = useState(getInitialTime);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSeconds((prev) => {
+        if (prev <= 1) {
+          const end = Date.now() + 2 * 60 * 60 * 1000;
+          sessionStorage.setItem("flash_sale_end", String(end));
+          return 2 * 60 * 60;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const hh = String(Math.floor(seconds / 3600)).padStart(2, "0");
+  const mm = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
+  const ss = String(seconds % 60).padStart(2, "0");
+
   return (
-    <div className="bg-brand-gold text-white text-center py-2 px-4 text-sm font-hindi font-medium">
+    <div className="bg-brand-gold text-white text-center py-2 px-4 text-sm font-hindi font-bold">
       <span>
-        🌿 100% प्राकृतिक आयुर्वेदिक औषधियाँ &nbsp;|&nbsp; निःशुल्क परामर्श उपलब्ध
-        &nbsp;|&nbsp; 📞 +91 92171 27566
+        ⚡ फ्लैश सेल! अभी ऑर्डर करें - ऑफर खत्म होने में:&nbsp;
+        <span className="inline-block bg-white text-brand-gold font-bold px-2 py-0.5 rounded tabular-nums text-sm">
+          {hh}:{mm}:{ss}
+        </span>
+        &nbsp;| 📞 +91 92171 27566
       </span>
     </div>
   );

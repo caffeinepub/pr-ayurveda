@@ -5,11 +5,13 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft,
+  BarChart3,
   CheckCircle,
   Clock,
   CreditCard,
   Eye,
   EyeOff,
+  IndianRupee,
   Leaf,
   MapPin,
   Package,
@@ -18,16 +20,33 @@ import {
   Plus,
   Save,
   ShoppingBag,
+  Trash2,
+  TrendingUp,
   Truck,
   Users,
   X,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { staticProducts } from "../data/staticData";
 
 const STATUSES = ["लंबित", "प्रोसेसिंग", "डिलीवर्ड"] as const;
 type Status = (typeof STATUSES)[number];
+
+const HINDI_MONTHS = [
+  "जनवरी",
+  "फरवरी",
+  "मार्च",
+  "अप्रैल",
+  "मई",
+  "जून",
+  "जुलाई",
+  "अगस्त",
+  "सितंबर",
+  "अक्टूबर",
+  "नवंबर",
+  "दिसंबर",
+];
 
 function statusColor(s: Status) {
   if (s === "लंबित") return "bg-yellow-100 text-yellow-800 border-yellow-200";
@@ -36,7 +55,10 @@ function statusColor(s: Status) {
 }
 
 // ─── Login Gate ──────────────────────────────────────────────────────────────
-function LoginGate({ onLogin }: { onLogin: () => void }) {
+function LoginGate({
+  onLogin,
+  onBack,
+}: { onLogin: () => void; onBack: () => void }) {
   const [pw, setPw] = useState("");
   const [showPw, setShowPw] = useState(false);
   const [err, setErr] = useState(false);
@@ -48,11 +70,6 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
       setErr(true);
       setPw("");
     }
-  };
-
-  const goToMain = () => {
-    window.location.hash = "";
-    window.location.reload();
   };
 
   return (
@@ -154,7 +171,7 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
                 type="button"
                 className="text-sm hover:underline"
                 style={{ color: "oklch(0.65 0.03 152)" }}
-                onClick={goToMain}
+                onClick={onBack}
               >
                 ← मुख्य साइट पर जाएं
               </button>
@@ -187,22 +204,131 @@ interface LocalConsultation {
   timestamp: number;
 }
 
-// ─── Orders Tab ───────────────────────────────────────────────────────────────
-function OrdersTab() {
-  const [orders, setOrders] = useState<LocalOrder[]>([]);
-  const [statuses, setStatuses] = useState<Record<string, Status>>({});
+// ─── Revenue Chart ─────────────────────────────────────────────────────────────
+function RevenueChart({ orders }: { orders: LocalOrder[] }) {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth();
 
-  useEffect(() => {
+  const months = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(currentYear, currentMonth - (5 - i), 1);
+    return {
+      month: d.getMonth(),
+      year: d.getFullYear(),
+      label: HINDI_MONTHS[d.getMonth()],
+      revenue: 0,
+    };
+  });
+
+  for (const order of orders) {
+    if (!order.date) continue;
     try {
-      const raw = localStorage.getItem("pr_orders");
-      if (raw) {
-        const parsed = JSON.parse(raw) as LocalOrder[];
-        setOrders(parsed.reverse()); // newest first
+      let d: Date;
+      if (order.date.includes("/")) {
+        const parts = order.date.split("/");
+        d =
+          parts.length === 3
+            ? new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]))
+            : new Date(order.date);
+      } else {
+        d = new Date(order.date);
       }
-    } catch {
-      setOrders([]);
-    }
-  }, []);
+      const mi = months.findIndex(
+        (m) => m.month === d.getMonth() && m.year === d.getFullYear(),
+      );
+      if (mi !== -1) months[mi].revenue += Number(order.total) || 0;
+    } catch {}
+  }
+
+  const maxRev = Math.max(...months.map((m) => m.revenue), 1);
+
+  return (
+    <Card
+      className="border-0 mb-6"
+      style={{ background: "oklch(0.18 0.04 152)" }}
+    >
+      <CardHeader className="pb-3">
+        <CardTitle
+          className="text-sm font-hindi flex items-center gap-2"
+          style={{ color: "oklch(0.96 0.01 80)" }}
+        >
+          <BarChart3
+            className="w-4 h-4"
+            style={{ color: "oklch(0.68 0.11 75)" }}
+          />
+          पिछले 6 महीनों का रेवेन्यू
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-end gap-2 h-36">
+          {months.map((m, i) => {
+            const heightPct = maxRev > 0 ? (m.revenue / maxRev) * 100 : 0;
+            const isCurrentMonth =
+              m.month === currentMonth && m.year === currentYear;
+            return (
+              <div
+                key={`${m.month}-${m.year}`}
+                className="flex-1 flex flex-col items-center gap-1"
+              >
+                <span
+                  className="text-xs font-hindi"
+                  style={{ color: "oklch(0.68 0.11 75)" }}
+                >
+                  {m.revenue > 0 ? `₹${(m.revenue / 1000).toFixed(1)}k` : ""}
+                </span>
+                <div
+                  className="w-full flex items-end"
+                  style={{ height: "80px" }}
+                >
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{
+                      height: `${Math.max(heightPct, m.revenue > 0 ? 4 : 0)}%`,
+                    }}
+                    transition={{ delay: i * 0.07, duration: 0.5 }}
+                    className="w-full rounded-t-md"
+                    style={{
+                      background: isCurrentMonth
+                        ? "oklch(0.68 0.11 75)"
+                        : "oklch(0.30 0.07 152)",
+                      minHeight: m.revenue > 0 ? "4px" : "2px",
+                    }}
+                  />
+                </div>
+                <span
+                  className="text-xs font-hindi"
+                  style={{
+                    color: isCurrentMonth
+                      ? "oklch(0.68 0.11 75)"
+                      : "oklch(0.55 0.04 152)",
+                  }}
+                >
+                  {m.label}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        <p
+          className="text-xs font-hindi mt-2"
+          style={{ color: "oklch(0.45 0.03 152)" }}
+        >
+          * Gold bar = चालू महीना
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ─── Orders Tab ───────────────────────────────────────────────────────────────
+function OrdersTab({
+  orders,
+  onOrderDelete,
+}: {
+  orders: LocalOrder[];
+  onOrderDelete: (orderNo: string) => void;
+}) {
+  const [statuses, setStatuses] = useState<Record<string, Status>>({});
 
   const getStatus = (orderNo: string, defaultStatus: string): Status => {
     return (statuses[orderNo] as Status) ?? (defaultStatus as Status) ?? "लंबित";
@@ -211,7 +337,6 @@ function OrdersTab() {
   const cycleStatus = (orderNo: string, current: Status) => {
     const next = STATUSES[(STATUSES.indexOf(current) + 1) % STATUSES.length];
     setStatuses((prev) => ({ ...prev, [orderNo]: next }));
-    // Also update in localStorage
     try {
       const raw = localStorage.getItem("pr_orders");
       if (raw) {
@@ -222,6 +347,12 @@ function OrdersTab() {
         localStorage.setItem("pr_orders", JSON.stringify(updated));
       }
     } catch {}
+  };
+
+  const handleDelete = (orderNo: string) => {
+    const confirmed = window.confirm("क्या आप यह ऑर्डर हटाना चाहते हैं?");
+    if (!confirmed) return;
+    onOrderDelete(orderNo);
   };
 
   if (!orders.length) {
@@ -249,163 +380,180 @@ function OrdersTab() {
 
   return (
     <div className="space-y-3">
-      {orders.map((order, idx) => {
-        const status = getStatus(order.orderNo, order.status);
-        return (
-          <motion.div
-            key={order.orderNo}
-            data-ocid={`orders.item.${idx + 1}`}
-            initial={{ opacity: 0, x: -12 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: idx * 0.05 }}
-            className="rounded-xl border p-4"
-            style={{
-              background: "oklch(0.18 0.04 152)",
-              borderColor: "oklch(0.28 0.05 152)",
-            }}
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Package
-                    className="w-4 h-4"
+      <AnimatePresence>
+        {orders.map((order, idx) => {
+          const status = getStatus(order.orderNo, order.status);
+          return (
+            <motion.div
+              key={order.orderNo}
+              data-ocid={`orders.item.${idx + 1}`}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 40, scale: 0.96 }}
+              transition={{ delay: idx * 0.03, duration: 0.25 }}
+              className="rounded-xl border p-4"
+              style={{
+                background: "oklch(0.18 0.04 152)",
+                borderColor: "oklch(0.28 0.05 152)",
+              }}
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Package
+                      className="w-4 h-4"
+                      style={{ color: "oklch(0.68 0.11 75)" }}
+                    />
+                    <span
+                      className="font-semibold font-hindi"
+                      style={{ color: "oklch(0.96 0.01 80)" }}
+                    >
+                      ऑर्डर #{order.orderNo}
+                    </span>
+                  </div>
+                  <div
+                    className="flex items-center gap-1 text-sm"
+                    style={{ color: "oklch(0.65 0.03 152)" }}
+                  >
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>{order.date}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span
+                    className={`text-xs font-semibold font-hindi px-2.5 py-1 rounded-full border ${statusColor(status)}`}
+                  >
+                    {status === "लंबित" && (
+                      <>
+                        <Clock className="inline w-3 h-3 mr-1" />
+                        {status}
+                      </>
+                    )}
+                    {status === "प्रोसेसिंग" && (
+                      <>
+                        <Truck className="inline w-3 h-3 mr-1" />
+                        {status}
+                      </>
+                    )}
+                    {status === "डिलीवर्ड" && (
+                      <>
+                        <CheckCircle className="inline w-3 h-3 mr-1" />
+                        {status}
+                      </>
+                    )}
+                  </span>
+                  <Button
+                    data-ocid={`orders.edit_button.${idx + 1}`}
+                    size="sm"
+                    variant="outline"
+                    className="text-xs font-hindi border"
+                    style={{
+                      borderColor: "oklch(0.35 0.06 152)",
+                      color: "oklch(0.75 0.04 152)",
+                      background: "oklch(0.22 0.045 152)",
+                    }}
+                    onClick={() => cycleStatus(order.orderNo, status)}
+                  >
+                    स्थिति अपडेट करें
+                  </Button>
+                  <Button
+                    data-ocid={`orders.delete_button.${idx + 1}`}
+                    size="sm"
+                    variant="outline"
+                    className="text-xs font-hindi border hover:bg-red-950 transition-colors"
+                    style={{
+                      borderColor: "oklch(0.42 0.18 27)",
+                      color: "oklch(0.65 0.22 27)",
+                      background: "oklch(0.20 0.06 27)",
+                    }}
+                    onClick={() => handleDelete(order.orderNo)}
+                  >
+                    <Trash2 className="w-3.5 h-3.5 mr-1" />
+                    हटाएं
+                  </Button>
+                </div>
+              </div>
+
+              <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: "oklch(0.75 0.04 152)" }}
+                >
+                  <Users
+                    className="w-3.5 h-3.5 shrink-0"
                     style={{ color: "oklch(0.68 0.11 75)" }}
                   />
                   <span
-                    className="font-semibold font-hindi"
+                    className="font-hindi font-semibold"
                     style={{ color: "oklch(0.96 0.01 80)" }}
                   >
-                    ऑर्डर #{order.orderNo}
+                    {order.name}
                   </span>
                 </div>
                 <div
-                  className="flex items-center gap-1 text-sm"
-                  style={{ color: "oklch(0.65 0.03 152)" }}
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: "oklch(0.75 0.04 152)" }}
                 >
-                  <Clock className="w-3.5 h-3.5" />
-                  <span>{order.date}</span>
+                  <Phone
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: "oklch(0.68 0.11 75)" }}
+                  />
+                  <span className="font-hindi">{order.phone}</span>
+                </div>
+                <div
+                  className="flex items-start gap-2 text-sm sm:col-span-2"
+                  style={{ color: "oklch(0.75 0.04 152)" }}
+                >
+                  <MapPin
+                    className="w-3.5 h-3.5 shrink-0 mt-0.5"
+                    style={{ color: "oklch(0.68 0.11 75)" }}
+                  />
+                  <span className="font-hindi">{order.address}</span>
+                </div>
+                <div
+                  className="flex items-center gap-2 text-sm"
+                  style={{ color: "oklch(0.75 0.04 152)" }}
+                >
+                  <CreditCard
+                    className="w-3.5 h-3.5 shrink-0"
+                    style={{ color: "oklch(0.68 0.11 75)" }}
+                  />
+                  <span className="font-hindi">{order.payment}</span>
+                </div>
+                <div
+                  style={{ color: "oklch(0.75 0.04 152)" }}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <span className="font-hindi">कुल: </span>
+                  <span
+                    className="font-semibold"
+                    style={{ color: "oklch(0.68 0.11 75)" }}
+                  >
+                    ₹{order.total.toLocaleString("hi-IN")}
+                  </span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`text-xs font-semibold font-hindi px-2.5 py-1 rounded-full border ${statusColor(status)}`}
-                >
-                  {status === "लंबित" && (
-                    <>
-                      <Clock className="inline w-3 h-3 mr-1" />
-                      {status}
-                    </>
-                  )}
-                  {status === "प्रोसेसिंग" && (
-                    <>
-                      <Truck className="inline w-3 h-3 mr-1" />
-                      {status}
-                    </>
-                  )}
-                  {status === "डिलीवर्ड" && (
-                    <>
-                      <CheckCircle className="inline w-3 h-3 mr-1" />
-                      {status}
-                    </>
-                  )}
-                </span>
-                <Button
-                  data-ocid={`orders.edit_button.${idx + 1}`}
-                  size="sm"
-                  variant="outline"
-                  className="text-xs font-hindi border"
-                  style={{
-                    borderColor: "oklch(0.35 0.06 152)",
-                    color: "oklch(0.75 0.04 152)",
-                    background: "oklch(0.22 0.045 152)",
-                  }}
-                  onClick={() => cycleStatus(order.orderNo, status)}
-                >
-                  स्थिति अपडेट करें
-                </Button>
-              </div>
-            </div>
 
-            {/* Customer info */}
-            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <div
-                className="flex items-center gap-2 text-sm"
-                style={{ color: "oklch(0.75 0.04 152)" }}
-              >
-                <Users
-                  className="w-3.5 h-3.5 shrink-0"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
-                />
-                <span
-                  className="font-hindi font-semibold"
-                  style={{ color: "oklch(0.96 0.01 80)" }}
-                >
-                  {order.name}
-                </span>
-              </div>
-              <div
-                className="flex items-center gap-2 text-sm"
-                style={{ color: "oklch(0.75 0.04 152)" }}
-              >
-                <Phone
-                  className="w-3.5 h-3.5 shrink-0"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
-                />
-                <span className="font-hindi">{order.phone}</span>
-              </div>
-              <div
-                className="flex items-start gap-2 text-sm sm:col-span-2"
-                style={{ color: "oklch(0.75 0.04 152)" }}
-              >
-                <MapPin
-                  className="w-3.5 h-3.5 shrink-0 mt-0.5"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
-                />
-                <span className="font-hindi">{order.address}</span>
-              </div>
-              <div
-                className="flex items-center gap-2 text-sm"
-                style={{ color: "oklch(0.75 0.04 152)" }}
-              >
-                <CreditCard
-                  className="w-3.5 h-3.5 shrink-0"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
-                />
-                <span className="font-hindi">{order.payment}</span>
-              </div>
-              <div
-                style={{ color: "oklch(0.75 0.04 152)" }}
-                className="flex items-center gap-2 text-sm"
-              >
-                <span className="font-hindi">कुल: </span>
-                <span
-                  className="font-semibold"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
-                >
-                  ₹{order.total.toLocaleString("hi-IN")}
-                </span>
-              </div>
-            </div>
-
-            {order.items.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {order.items.map((item, i) => (
-                  <span
-                    key={`${item.name}-${i}`}
-                    className="text-xs px-2 py-0.5 rounded-md font-hindi"
-                    style={{
-                      background: "oklch(0.23 0.055 152)",
-                      color: "oklch(0.75 0.04 152)",
-                    }}
-                  >
-                    {item.name} × {item.qty}
-                  </span>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        );
-      })}
+              {order.items.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {order.items.map((item, i) => (
+                    <span
+                      key={`${item.name}-${i}`}
+                      className="text-xs px-2 py-0.5 rounded-md font-hindi"
+                      style={{
+                        background: "oklch(0.23 0.055 152)",
+                        color: "oklch(0.75 0.04 152)",
+                      }}
+                    >
+                      {item.name} × {item.qty}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          );
+        })}
+      </AnimatePresence>
     </div>
   );
 }
@@ -793,18 +941,26 @@ function ProductsTab() {
 }
 
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
-export default function AdminDashboard() {
+interface AdminDashboardProps {
+  onExit?: () => void;
+}
+
+export default function AdminDashboard({ onExit }: AdminDashboardProps) {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [orderCount, setOrderCount] = useState(0);
+  const [orders, setOrders] = useState<LocalOrder[]>([]);
   const [consultCount, setConsultCount] = useState(0);
 
   useEffect(() => {
     if (loggedIn) {
       try {
-        const orders = JSON.parse(
+        const parsed = JSON.parse(
           localStorage.getItem("pr_orders") || "[]",
-        ) as unknown[];
-        setOrderCount(orders.length);
+        ) as LocalOrder[];
+        setOrders([...parsed].reverse());
+      } catch {
+        setOrders([]);
+      }
+      try {
         const consults = JSON.parse(
           localStorage.getItem("pr_consultations") || "[]",
         ) as unknown[];
@@ -813,14 +969,64 @@ export default function AdminDashboard() {
     }
   }, [loggedIn]);
 
-  const goToMain = () => {
-    window.location.hash = "";
-    window.location.reload();
+  const handleOrderDelete = (orderNo: string) => {
+    try {
+      const raw = localStorage.getItem("pr_orders");
+      if (raw) {
+        const parsed = JSON.parse(raw) as LocalOrder[];
+        const updated = parsed.filter((o) => o.orderNo !== orderNo);
+        localStorage.setItem("pr_orders", JSON.stringify(updated));
+      }
+    } catch {}
+    setOrders((prev) => prev.filter((o) => o.orderNo !== orderNo));
+  };
+
+  const handleBack = () => {
+    if (onExit) {
+      onExit();
+    } else {
+      window.location.hash = "";
+      window.location.reload();
+    }
   };
 
   if (!loggedIn) {
-    return <LoginGate onLogin={() => setLoggedIn(true)} />;
+    return <LoginGate onLogin={() => setLoggedIn(true)} onBack={handleBack} />;
   }
+
+  const currentMonthName = HINDI_MONTHS[new Date().getMonth()];
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const totalRevenue = orders.reduce(
+    (sum, o) => sum + (Number(o.total) || 0),
+    0,
+  );
+  const monthRevenue = orders
+    .filter((o) => {
+      if (!o.date) return false;
+      try {
+        let d: Date;
+        if (o.date.includes("/")) {
+          const parts = o.date.split("/");
+          d =
+            parts.length === 3
+              ? new Date(
+                  Number(parts[2]),
+                  Number(parts[1]) - 1,
+                  Number(parts[0]),
+                )
+              : new Date(o.date);
+        } else {
+          d = new Date(o.date);
+        }
+        return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+      } catch {
+        return false;
+      }
+    })
+    .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
 
   return (
     <div
@@ -863,7 +1069,7 @@ export default function AdminDashboard() {
             type="button"
             className="flex items-center gap-1.5 text-sm hover:underline"
             style={{ color: "oklch(0.65 0.05 152)" }}
-            onClick={goToMain}
+            onClick={handleBack}
           >
             <ArrowLeft className="w-4 h-4" />
             मुख्य साइट
@@ -884,27 +1090,39 @@ export default function AdminDashboard() {
       {/* Content */}
       <main className="max-w-5xl mx-auto p-4 md:p-6">
         {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
           {[
             {
               icon: ShoppingBag,
               label: "ऑर्डर्स",
-              count: orderCount,
+              value: String(orders.length),
               color: "oklch(0.68 0.11 75)",
             },
             {
               icon: Users,
               label: "परामर्श",
-              count: consultCount,
+              value: String(consultCount),
               color: "oklch(0.55 0.18 250)",
             },
             {
               icon: Package,
               label: "प्रोडक्ट्स",
-              count: staticProducts.length,
+              value: String(staticProducts.length),
               color: "oklch(0.55 0.17 160)",
             },
-          ].map(({ icon: Icon, label, count, color }) => (
+            {
+              icon: IndianRupee,
+              label: "कुल रेवेन्यू",
+              value: `₹${totalRevenue.toLocaleString("hi-IN")}`,
+              color: "oklch(0.72 0.18 145)",
+            },
+            {
+              icon: TrendingUp,
+              label: `${currentMonthName} रेवेन्यू`,
+              value: `₹${monthRevenue.toLocaleString("hi-IN")}`,
+              color: "oklch(0.68 0.18 55)",
+            },
+          ].map(({ icon: Icon, label, value, color }) => (
             <Card
               key={label}
               className="border-0"
@@ -917,15 +1135,15 @@ export default function AdminDashboard() {
                 >
                   <Icon className="w-5 h-5" style={{ color }} />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p
-                    className="text-lg font-bold font-hindi"
+                    className="text-base font-bold font-hindi truncate"
                     style={{ color: "oklch(0.96 0.01 80)" }}
                   >
-                    {count}
+                    {value}
                   </p>
                   <p
-                    className="text-xs font-hindi"
+                    className="text-xs font-hindi truncate"
                     style={{ color: "oklch(0.65 0.04 152)" }}
                   >
                     {label}
@@ -935,6 +1153,9 @@ export default function AdminDashboard() {
             </Card>
           ))}
         </div>
+
+        {/* Monthly Revenue Chart */}
+        <RevenueChart orders={orders} />
 
         <Tabs defaultValue="orders" className="space-y-4">
           <TabsList
@@ -966,7 +1187,7 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="orders">
-            <OrdersTab />
+            <OrdersTab orders={orders} onOrderDelete={handleOrderDelete} />
           </TabsContent>
           <TabsContent value="consultations">
             <ConsultationsTab />

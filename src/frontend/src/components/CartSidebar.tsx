@@ -3,7 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { staticProducts } from "@/data/staticData";
-import { useActor } from "@/hooks/useActor";
 import type { useLocalCart } from "@/hooks/useLocalCart";
 import {
   ArrowLeft,
@@ -11,7 +10,6 @@ import {
   CreditCard,
   MapPin,
   Minus,
-  Package,
   Plus,
   ShoppingBag,
   Smartphone,
@@ -20,7 +18,8 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface CartSidebarProps {
@@ -81,7 +80,6 @@ const STEPS = [
 ];
 
 export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
-  const { actor } = useActor();
   const { items, total, removeFromCart, updateQuantity, clearCart } = cart;
 
   const [step, setStep] = useState<Step>("cart");
@@ -102,6 +100,20 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
   const [cardCvv, setCardCvv] = useState("");
   const [orderNo, setOrderNo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Safety: if items become empty while on address/payment step, reset to cart
+  useEffect(() => {
+    if (items.length === 0 && (step === "address" || step === "payment")) {
+      setStep("cart");
+    }
+  }, [items.length, step]);
+
+  // Reset step to cart when sidebar is opened if cart is empty
+  useEffect(() => {
+    if (open && items.length === 0 && step !== "success") {
+      setStep("cart");
+    }
+  }, [open, items.length, step]);
 
   const getProductName = (productId: bigint) =>
     staticProducts.find((sp) => sp.id === productId)?.name ||
@@ -127,23 +139,10 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
     if (!validateAddr()) return;
     setIsSubmitting(true);
     try {
-      // Try to submit to backend but don't block on failure
       const no = `PR${Date.now().toString().slice(-6)}`;
-
-      if (actor) {
-        try {
-          await actor.placeOrder();
-        } catch (backendErr) {
-          console.warn(
-            "Backend order submission failed, saving locally:",
-            backendErr,
-          );
-        }
-      }
-
       setOrderNo(no);
-      // Save to localStorage for order tracking
       const existing = JSON.parse(localStorage.getItem("pr_orders") || "[]");
+      const capturedTotal = total;
       existing.push({
         orderNo: no,
         date: new Date().toLocaleDateString("hi-IN"),
@@ -152,7 +151,7 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
           qty: item.quantity,
           price: getProductPrice(item.productId),
         })),
-        total,
+        total: capturedTotal,
         address: `${addr.address}, ${addr.city}, ${addr.state} - ${addr.pincode}`,
         phone: addr.phone,
         name: addr.name,
@@ -165,7 +164,7 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
         status: "लंबित",
       });
       localStorage.setItem("pr_orders", JSON.stringify(existing));
-      setConfirmedTotal(total);
+      setConfirmedTotal(capturedTotal);
       clearCart();
       setStep("success");
     } catch (err) {
@@ -221,6 +220,34 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
     </div>
   );
 
+  type PaymentOption = {
+    id: PaymentMethod;
+    icon: React.ElementType;
+    label: string;
+    desc: string;
+  };
+
+  const paymentOptions: PaymentOption[] = [
+    {
+      id: "cod",
+      icon: Truck,
+      label: "कैश ऑन डिलीवरी (COD)",
+      desc: "डिलीवरी पर नगद भुगतान करें",
+    },
+    {
+      id: "upi",
+      icon: Smartphone,
+      label: "UPI / गूगल पे / PhonePe",
+      desc: "अपने UPI से तुरंत भुगतान करें",
+    },
+    {
+      id: "card",
+      icon: CreditCard,
+      label: "डेबिट / क्रेडिट कार्ड",
+      desc: "सभी बैंक कार्ड स्वीकार",
+    },
+  ];
+
   return (
     <AnimatePresence>
       {open && (
@@ -238,7 +265,6 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-background shadow-2xl z-50 flex flex-col"
-            data-ocid="cart.sheet"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-5 border-b border-border">
@@ -265,13 +291,12 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                 type="button"
                 onClick={handleClose}
                 className="p-2 hover:bg-secondary rounded-full"
-                data-ocid="cart.close_button"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Step Indicator */}
+            {/* Step indicator */}
             {step !== "success" && (
               <div className="flex border-b border-border">
                 {STEPS.slice(0, 3).map((s, i) => (
@@ -290,34 +315,33 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
               </div>
             )}
 
-            {/* CART STEP */}
+            {/* STEP: Cart */}
             {step === "cart" && (
               <>
                 <div className="flex-1 overflow-y-auto p-5">
                   {items.length === 0 ? (
-                    <div
-                      className="text-center py-16"
-                      data-ocid="cart.empty_state"
-                    >
+                    <div className="text-center py-16">
                       <ShoppingBag className="w-16 h-16 text-muted mx-auto mb-4" />
                       <p className="font-hindi text-muted-foreground text-lg">
                         आपका कार्ट खाली है
                       </p>
+                      <p className="font-hindi text-sm text-muted-foreground mt-2 mb-6">
+                        उत्पाद जोड़ें और यहाँ ऑर्डर करें
+                      </p>
                       <Button
                         onClick={handleClose}
-                        className="mt-6 bg-brand-green text-white font-hindi"
-                        data-ocid="cart.secondary_button"
+                        className="mt-2 bg-brand-green text-white font-hindi"
+                        data-ocid="cart.primary_button"
                       >
                         उत्पाद देखें
                       </Button>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {items.map((item, i) => (
+                      {items.map((item) => (
                         <div
                           key={item.productId.toString()}
                           className="flex items-center gap-4 bg-card rounded-lg p-4"
-                          data-ocid={`cart.item.${i + 1}`}
                         >
                           <div className="flex-1 min-w-0">
                             <p className="font-hindi font-semibold text-brand-green text-sm truncate">
@@ -331,14 +355,13 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                             <button
                               type="button"
                               onClick={() => {
-                                if (item.quantity <= 1) {
+                                if (item.quantity <= 1)
                                   removeFromCart(item.productId);
-                                } else {
+                                else
                                   updateQuantity(
                                     item.productId,
                                     item.quantity - 1,
                                   );
-                                }
                               }}
                               className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-secondary"
                             >
@@ -364,7 +387,6 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                             type="button"
                             onClick={() => removeFromCart(item.productId)}
                             className="p-1.5 text-destructive hover:bg-destructive/10 rounded"
-                            data-ocid={`cart.item.${i + 1}.delete_button`}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -390,7 +412,7 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                     <Button
                       className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold py-6 text-base"
                       onClick={() => setStep("address")}
-                      data-ocid="cart.confirm_button"
+                      data-ocid="cart.primary_button"
                     >
                       आगे बढ़ें →
                     </Button>
@@ -399,7 +421,7 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
               </>
             )}
 
-            {/* ADDRESS STEP */}
+            {/* STEP: Address */}
             {step === "address" && (
               <>
                 <div className="flex-1 overflow-y-auto p-5 space-y-3">
@@ -470,6 +492,7 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                     onClick={() => {
                       if (validateAddr()) setStep("payment");
                     }}
+                    data-ocid="cart.primary_button"
                   >
                     भुगतान विधि चुनें →
                   </Button>
@@ -477,38 +500,12 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
               </>
             )}
 
-            {/* PAYMENT STEP */}
+            {/* STEP: Payment */}
             {step === "payment" && (
               <>
                 <div className="flex-1 overflow-y-auto p-5 space-y-4">
                   <div className="space-y-3">
-                    {(
-                      [
-                        {
-                          id: "cod",
-                          icon: Truck,
-                          label: "कैश ऑन डिलीवरी (COD)",
-                          desc: "डिलीवरी पर नगद भुगतान करें",
-                        },
-                        {
-                          id: "upi",
-                          icon: Smartphone,
-                          label: "UPI / गूगल पे / PhonePe",
-                          desc: "अपने UPI से तुरंत भुगतान करें",
-                        },
-                        {
-                          id: "card",
-                          icon: CreditCard,
-                          label: "डेबिट / क्रेडिट कार्ड",
-                          desc: "सभी बैंक कार्ड स्वीकार",
-                        },
-                      ] as {
-                        id: PaymentMethod;
-                        icon: React.ElementType;
-                        label: string;
-                        desc: string;
-                      }[]
-                    ).map(({ id, icon: Icon, label, desc }) => (
+                    {paymentOptions.map(({ id, icon: Icon, label, desc }) => (
                       <button
                         key={id}
                         type="button"
@@ -637,7 +634,7 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                     className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold py-6 text-base"
                     onClick={handlePlaceOrder}
                     disabled={isSubmitting}
-                    data-ocid="cart.confirm_button"
+                    data-ocid="cart.submit_button"
                   >
                     {isSubmitting
                       ? "ऑर्डर दिया जा रहा है..."
@@ -647,7 +644,7 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
               </>
             )}
 
-            {/* SUCCESS STEP */}
+            {/* STEP: Success */}
             {step === "success" && (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
                 <motion.div
@@ -665,7 +662,6 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                 <p className="font-hindi text-muted-foreground mb-4">
                   आपका ऑर्डर प्राप्त हो गया है
                 </p>
-
                 <div className="w-full bg-card rounded-xl border border-border p-4 text-left space-y-2 mb-6">
                   <div className="flex justify-between">
                     <span className="font-hindi text-sm text-muted-foreground">
@@ -714,10 +710,10 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
                     </p>
                   </div>
                 </div>
-
                 <Button
                   className="w-full bg-brand-green text-white font-hindi"
                   onClick={handleClose}
+                  data-ocid="cart.primary_button"
                 >
                   ठीक है, धन्यवाद!
                 </Button>

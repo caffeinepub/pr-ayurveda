@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import AboutSection from "./components/AboutSection";
 import AdminDashboard from "./components/AdminDashboard";
 import AnnouncementBar from "./components/AnnouncementBar";
 import BenefitsSection from "./components/BenefitsSection";
@@ -13,26 +14,23 @@ import HowItWorks from "./components/HowItWorks";
 import MyOrders from "./components/MyOrders";
 import ProductsSection from "./components/ProductsSection";
 import TestimonialsSection from "./components/TestimonialsSection";
+import TrustBadges from "./components/TrustBadges";
+import WelcomePopup from "./components/WelcomePopup";
+import WhatsAppButton from "./components/WhatsAppButton";
 import WhyChooseUs from "./components/WhyChooseUs";
 import { useLocalCart } from "./hooks/useLocalCart";
 
 export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [ordersOpen, setOrdersOpen] = useState(false);
-  const [hash, setHash] = useState(() => window.location.hash);
+  const [adminOpen, setAdminOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const cart = useLocalCart();
 
-  useEffect(() => {
-    const handleHashChange = () => setHash(window.location.hash);
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
-  if (hash === "#admin") {
+  if (adminOpen) {
     return (
       <>
-        <AdminDashboard />
+        <AdminDashboard onExit={() => setAdminOpen(false)} />
         <Toaster position="top-right" richColors />
       </>
     );
@@ -60,21 +58,25 @@ export default function App() {
           onShopClick={scrollToProducts}
           onConsultClick={scrollToContact}
         />
+        <TrustBadges />
         <WhyChooseUs />
         <ProductsSection searchQuery={searchQuery} cart={cart} />
         <BenefitsSection />
+        <AboutSection />
         <HowItWorks />
         <TestimonialsSection />
         <FAQSection />
         <ConsultationForm />
       </main>
-      <Footer />
+      <Footer onAdminOpen={() => setAdminOpen(true)} />
       <CartSidebar
         open={cartOpen}
         onClose={() => setCartOpen(false)}
         cart={cart}
       />
       <MyOrders open={ordersOpen} onClose={() => setOrdersOpen(false)} />
+      <WelcomePopup />
+      <WhatsAppButton />
       <Toaster position="top-right" richColors />
     </div>
   );

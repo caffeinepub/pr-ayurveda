@@ -22,6 +22,9 @@ import { useLocalCart } from "./hooks/useLocalCart";
 
 export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
+  const [cartInitialStep, setCartInitialStep] = useState<
+    "cart" | "address" | "payment"
+  >("cart");
   const [ordersOpen, setOrdersOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,6 +47,11 @@ export default function App() {
     document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleBuyNow = (_productId: bigint) => {
+    setCartInitialStep("address");
+    setCartOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-background font-hindi">
       <AnnouncementBar />
@@ -60,7 +68,11 @@ export default function App() {
         />
         <TrustBadges />
         <WhyChooseUs />
-        <ProductsSection searchQuery={searchQuery} cart={cart} />
+        <ProductsSection
+          searchQuery={searchQuery}
+          cart={cart}
+          onBuyNow={handleBuyNow}
+        />
         <BenefitsSection />
         <AboutSection />
         <HowItWorks />
@@ -71,8 +83,12 @@ export default function App() {
       <Footer onAdminOpen={() => setAdminOpen(true)} />
       <CartSidebar
         open={cartOpen}
-        onClose={() => setCartOpen(false)}
+        onClose={() => {
+          setCartOpen(false);
+          setCartInitialStep("cart");
+        }}
         cart={cart}
+        initialStep={cartInitialStep}
       />
       <MyOrders open={ordersOpen} onClose={() => setOrdersOpen(false)} />
       <WelcomePopup />

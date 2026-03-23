@@ -26,6 +26,7 @@ interface CartSidebarProps {
   open: boolean;
   onClose: () => void;
   cart: ReturnType<typeof useLocalCart>;
+  initialStep?: "cart" | "address" | "payment";
 }
 
 interface Address {
@@ -79,7 +80,12 @@ const STEPS = [
   { id: "success", label: "पुष्टि", icon: CheckCircle },
 ];
 
-export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
+export default function CartSidebar({
+  open,
+  onClose,
+  cart,
+  initialStep,
+}: CartSidebarProps) {
   const { items, total, removeFromCart, updateQuantity, clearCart } = cart;
 
   const [step, setStep] = useState<Step>("cart");
@@ -101,19 +107,19 @@ export default function CartSidebar({ open, onClose, cart }: CartSidebarProps) {
   const [orderNo, setOrderNo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // When sidebar opens with an initialStep, jump to that step
+  useEffect(() => {
+    if (open && initialStep) {
+      setStep(initialStep);
+    }
+  }, [open, initialStep]);
+
   // Safety: if items become empty while on address/payment step, reset to cart
   useEffect(() => {
     if (items.length === 0 && (step === "address" || step === "payment")) {
       setStep("cart");
     }
   }, [items.length, step]);
-
-  // Reset step to cart when sidebar is opened if cart is empty
-  useEffect(() => {
-    if (open && items.length === 0 && step !== "success") {
-      setStep("cart");
-    }
-  }, [open, items.length, step]);
 
   const getProductName = (productId: bigint) =>
     staticProducts.find((sp) => sp.id === productId)?.name ||

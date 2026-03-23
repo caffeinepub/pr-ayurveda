@@ -3,7 +3,11 @@ import { Button } from "@/components/ui/button";
 import { staticProducts } from "@/data/staticData";
 import type { useLocalCart } from "@/hooks/useLocalCart";
 import { ShoppingCart, Star } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import ProductDetailModal from "./ProductDetailModal";
+
+type Product = (typeof staticProducts)[0];
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -34,12 +38,16 @@ const productBadges = [
 interface ProductsSectionProps {
   searchQuery?: string;
   cart: ReturnType<typeof useLocalCart>;
+  onBuyNow: (productId: bigint) => void;
 }
 
 export default function ProductsSection({
   searchQuery = "",
   cart,
+  onBuyNow,
 }: ProductsSectionProps) {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
   const products = searchQuery.trim()
     ? staticProducts.filter(
         (p) =>
@@ -48,7 +56,12 @@ export default function ProductsSection({
       )
     : staticProducts;
 
-  const handleAddToCart = (productId: bigint, name: string) => {
+  const handleAddToCart = (
+    e: React.MouseEvent,
+    productId: bigint,
+    name: string,
+  ) => {
+    e.stopPropagation();
     cart.addToCart(productId, 1);
     toast.success(`${name} कार्ट में जोड़ दिया गया!`);
   };
@@ -68,15 +81,15 @@ export default function ProductsSection({
           </p>
           {searchQuery && (
             <p className="text-brand-green font-hindi mt-2 text-sm">
-              "{searchQuery}" के लिए {products.length} परिणाम मिले
+              &quot;{searchQuery}&quot; के लिए {products.length} परिणाम मिले
             </p>
           )}
         </div>
 
         {products.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-16" data-ocid="products.empty_state">
             <p className="font-hindi text-lg text-muted-foreground">
-              "{searchQuery}" के लिए कोई उत्पाद नहीं मिला
+              &quot;{searchQuery}&quot; के लिए कोई उत्पाद नहीं मिला
             </p>
           </div>
         ) : (
@@ -86,37 +99,53 @@ export default function ProductsSection({
               return (
                 <div
                   key={product.id.toString()}
-                  className="bg-card rounded-lg overflow-hidden shadow-card hover:shadow-card-hover transition-shadow group"
+                  className="bg-card rounded-lg overflow-hidden shadow-card hover:shadow-card-hover transition-all group hover:-translate-y-1 duration-200"
+                  data-ocid={`products.item.${i + 1}`}
                 >
-                  <div className="relative overflow-hidden h-52">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          "https://placehold.co/400x400/166534/ffffff?text=PR+Ayurveda";
-                      }}
-                    />
-                    <Badge
-                      className={`absolute top-3 left-3 font-hindi text-xs font-bold ${badge.className}`}
-                    >
-                      {badge.label}
-                    </Badge>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-hindi-serif font-bold text-brand-green text-lg mb-1">
-                      {product.name}
-                    </h3>
-                    <p className="text-muted-foreground font-hindi text-xs mb-3 line-clamp-2">
-                      {product.description}
-                    </p>
-                    <div className="flex items-center gap-2 mb-3">
-                      <StarRating rating={product.rating} />
-                      <span className="text-xs text-muted-foreground font-hindi">
-                        ({product.reviews})
-                      </span>
+                  {/* Clickable image + title area */}
+                  <button
+                    type="button"
+                    className="w-full text-left focus:outline-none"
+                    onClick={() => setSelectedProduct(product)}
+                  >
+                    <div className="relative overflow-hidden h-52">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            "https://placehold.co/400x400/166534/ffffff?text=PR+Ayurveda";
+                        }}
+                      />
+                      <Badge
+                        className={`absolute top-3 left-3 font-hindi text-xs font-bold ${badge.className}`}
+                      >
+                        {badge.label}
+                      </Badge>
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center pb-3 opacity-0 group-hover:opacity-100">
+                        <span className="bg-white/90 text-brand-green font-hindi text-xs font-bold px-3 py-1 rounded-full shadow">
+                          👆 विवरण देखें
+                        </span>
+                      </div>
                     </div>
+                    <div className="px-4 pt-4 pb-1">
+                      <h3 className="font-hindi-serif font-bold text-brand-green text-lg mb-1">
+                        {product.name}
+                      </h3>
+                      <p className="text-muted-foreground font-hindi text-xs mb-3 line-clamp-2">
+                        {product.description}
+                      </p>
+                      <div className="flex items-center gap-2 mb-2">
+                        <StarRating rating={product.rating} />
+                        <span className="text-xs text-muted-foreground font-hindi">
+                          ({product.reviews})
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                  {/* Non-clickable bottom area with price + add to cart */}
+                  <div className="px-4 pb-4">
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-bold text-xl text-brand-green font-hindi-serif">
                         ₹{Number(product.price)}
@@ -124,9 +153,10 @@ export default function ProductsSection({
                       <Button
                         size="sm"
                         className="bg-brand-green hover:bg-brand-green-light text-white font-hindi text-xs px-3"
-                        onClick={() =>
-                          handleAddToCart(product.id, product.name)
+                        onClick={(e) =>
+                          handleAddToCart(e, product.id, product.name)
                         }
+                        data-ocid={`products.item.${i + 1}`}
                       >
                         <ShoppingCart className="w-3 h-3 mr-1" />
                         कार्ट में जोड़ें
@@ -142,6 +172,14 @@ export default function ProductsSection({
           </div>
         )}
       </div>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        cart={cart}
+        onBuyNow={onBuyNow}
+      />
     </section>
   );
 }

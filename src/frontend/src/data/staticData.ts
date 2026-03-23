@@ -1,12 +1,3 @@
-import imgAshwagandha from "/assets/generated/product-ashwagandha.dim_400x400.jpg";
-import imgGokhru from "/assets/generated/product-gokhru.dim_400x400.jpg";
-import imgKaunchBeej from "/assets/generated/product-kaunchbeej.dim_400x400.jpg";
-import imgPurushShakti from "/assets/generated/product-purush-shakti.dim_400x400.jpg";
-import imgSafedMusli from "/assets/generated/product-safedmusli.dim_400x400.jpg";
-import imgShatavari from "/assets/generated/product-shatavari.dim_400x400.jpg";
-import imgShilajit from "/assets/generated/product-shilajit.dim_400x400.jpg";
-import imgVidarikand from "/assets/generated/product-vidarikand.dim_400x400.jpg";
-
 export const staticProducts = [
   {
     id: BigInt(1),
@@ -16,7 +7,7 @@ export const staticProducts = [
     benefits: "यौन शक्ति वृद्धि, स्टैमिना, ऊर्जा",
     price: BigInt(2598),
     ingredients: "शुद्ध शिलाजीत, अश्वगंधा, सफेद मूसली",
-    image: imgShilajit,
+    image: "/assets/generated/product-shilajit.dim_400x400.jpg",
     rating: 5,
     reviews: 1250,
   },
@@ -27,7 +18,7 @@ export const staticProducts = [
     benefits: "तनाव मुक्ति, मानसिक स्वास्थ्य, शक्ति वर्धक",
     price: BigInt(1198),
     ingredients: "शुद्ध अश्वगंधा जड़",
-    image: imgAshwagandha,
+    image: "/assets/generated/product-ashwagandha.dim_400x400.jpg",
     rating: 5,
     reviews: 980,
   },
@@ -39,7 +30,7 @@ export const staticProducts = [
     benefits: "यौन शक्ति, स्टैमिना, वीर्य वर्धक",
     price: BigInt(1998),
     ingredients: "शुद्ध सफेद मूसली",
-    image: imgSafedMusli,
+    image: "/assets/generated/product-safedmusli.dim_400x400.jpg",
     rating: 4,
     reviews: 750,
   },
@@ -50,7 +41,7 @@ export const staticProducts = [
     benefits: "यौन शक्ति, हार्मोन बैलेंस, स्पर्म काउंट",
     price: BigInt(1598),
     ingredients: "शुद्ध कौंच बीज",
-    image: imgKaunchBeej,
+    image: "/assets/generated/product-kaunchbeej.dim_400x400.jpg",
     rating: 4,
     reviews: 620,
   },
@@ -61,7 +52,7 @@ export const staticProducts = [
     benefits: "हार्मोन बैलेंस, ऊर्जा, पोषण",
     price: BigInt(1398),
     ingredients: "शुद्ध शतावरी अर्क",
-    image: imgShatavari,
+    image: "/assets/generated/product-shatavari.dim_400x400.jpg",
     rating: 4,
     reviews: 540,
   },
@@ -73,7 +64,7 @@ export const staticProducts = [
     benefits: "यौन कमजोरी, शक्ति, वीर्य वर्धक",
     price: BigInt(998),
     ingredients: "शुद्ध विदारीकंद",
-    image: imgVidarikand,
+    image: "/assets/generated/product-vidarikand.dim_400x400.jpg",
     rating: 4,
     reviews: 410,
   },
@@ -86,7 +77,7 @@ export const staticProducts = [
     price: BigInt(2998),
     ingredients:
       "शिलाजीत, अश्वगंधा, सफेद मूसली, कौंच बीज, शतावरी, गोखरू, अकरकरा, जायफल",
-    image: imgPurushShakti,
+    image: "/assets/generated/product-purush-shakti.dim_400x400.jpg",
     rating: 5,
     reviews: 1800,
   },
@@ -98,7 +89,7 @@ export const staticProducts = [
     benefits: "टेस्टोस्टेरोन बूस्ट, किडनी, यौन शक्ति",
     price: BigInt(1798),
     ingredients: "शुद्ध गोखरू अर्क",
-    image: imgGokhru,
+    image: "/assets/generated/product-gokhru.dim_400x400.jpg",
     rating: 4,
     reviews: 390,
   },

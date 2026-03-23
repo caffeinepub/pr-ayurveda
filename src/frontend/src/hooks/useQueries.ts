@@ -120,26 +120,32 @@ export function useSubmitConsultation() {
   });
 }
 
+// Admin queries — only require actor to be present (not isFetching)
+// This prevents indefinite loading when actor is already available
 export function useOrders() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery<Order[]>({
     queryKey: ["orders"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getOrders();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor,
+    staleTime: 0,
+    retry: 2,
   });
 }
 
 export function useConsultations() {
-  const { actor, isFetching } = useActor();
+  const { actor } = useActor();
   return useQuery<Consultation[]>({
     queryKey: ["consultations"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getConsultations();
     },
-    enabled: !!actor && !isFetching,
+    enabled: !!actor,
+    staleTime: 0,
+    retry: 2,
   });
 }

@@ -23,6 +23,7 @@ import {
 import { motion } from "motion/react";
 import { useState } from "react";
 import { staticProducts } from "../data/staticData";
+import { useActor } from "../hooks/useActor";
 import { useConsultations, useOrders } from "../hooks/useQueries";
 
 const STATUSES = ["लंबित", "प्रोसेसिंग", "डिलीवर्ड"] as const;
@@ -58,6 +59,11 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
       setErr(true);
       setPw("");
     }
+  };
+
+  const goToMain = () => {
+    window.location.hash = "";
+    window.location.href = window.location.href.replace(/#.*$/, "");
   };
 
   return (
@@ -139,7 +145,7 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
                   className="text-sm"
                   style={{ color: "oklch(0.65 0.22 27)" }}
                 >
-                  गलत पासवर्ड। कृपया पुनः प्रयास करें।
+                  ❌ गलत पासवर्ड। कृपया पुनः प्रयास करें।
                 </p>
               )}
             </div>
@@ -159,9 +165,7 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
                 type="button"
                 className="text-sm hover:underline"
                 style={{ color: "oklch(0.65 0.03 152)" }}
-                onClick={() => {
-                  window.location.hash = "";
-                }}
+                onClick={goToMain}
               >
                 ← मुख्य साइट पर जाएं
               </button>
@@ -173,9 +177,61 @@ function LoginGate({ onLogin }: { onLogin: () => void }) {
   );
 }
 
+// ─── Loading Indicator ────────────────────────────────────────────────────────
+function LoadingSpinner({ label }: { label: string }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <div
+        className="animate-spin w-10 h-10 rounded-full border-4"
+        style={{
+          borderColor: "oklch(0.30 0.06 152)",
+          borderTopColor: "oklch(0.68 0.11 75)",
+        }}
+      />
+      <p
+        className="font-hindi text-sm"
+        style={{ color: "oklch(0.55 0.04 152)" }}
+      >
+        {label}
+      </p>
+    </div>
+  );
+}
+
+// ─── Actor Loading Gate ───────────────────────────────────────────────────────
+function ActorGate({ children }: { children: React.ReactNode }) {
+  const { actor, isFetching } = useActor();
+
+  if (!actor && isFetching) {
+    return <LoadingSpinner label="बैकएंड से जुड़ रहे हैं..." />;
+  }
+
+  if (!actor && !isFetching) {
+    return (
+      <div className="text-center py-16">
+        <p className="font-hindi" style={{ color: "oklch(0.65 0.22 27)" }}>
+          ⚠️ बैकएंड से कनेक्ट नहीं हो सका। पेज रिफ्रेश करें।
+        </p>
+        <Button
+          className="mt-4 font-hindi"
+          style={{
+            background: "oklch(0.27 0.065 152)",
+            color: "oklch(0.96 0.01 80)",
+          }}
+          onClick={() => window.location.reload()}
+        >
+          पेज रिफ्रेश करें
+        </Button>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
 // ─── Orders Tab ───────────────────────────────────────────────────────────────
 function OrdersTab() {
-  const { data: orders = [], isLoading } = useOrders();
+  const { data: orders = [], isLoading, isError } = useOrders();
   const [statuses, setStatuses] = useState<Record<string, Status>>({});
 
   const getStatus = (idx: number): Status => {
@@ -190,18 +246,15 @@ function OrdersTab() {
   };
 
   if (isLoading) {
+    return <LoadingSpinner label="ऑर्डर लोड हो रहे हैं..." />;
+  }
+
+  if (isError) {
     return (
-      <div
-        data-ocid="orders.loading_state"
-        className="flex items-center justify-center py-16"
-      >
-        <div
-          className="animate-spin w-8 h-8 rounded-full border-2 border-t-transparent"
-          style={{
-            borderColor: "oklch(0.68 0.11 75)",
-            borderTopColor: "transparent",
-          }}
-        />
+      <div data-ocid="orders.error_state" className="text-center py-16">
+        <p className="font-hindi" style={{ color: "oklch(0.65 0.22 27)" }}>
+          ⚠️ ऑर्डर लोड करने में समस्या हुई। पेज रिफ्रेश करें।
+        </p>
       </div>
     );
   }
@@ -213,8 +266,17 @@ function OrdersTab() {
           className="w-12 h-12 mx-auto mb-3"
           style={{ color: "oklch(0.55 0.04 152)" }}
         />
-        <p className="font-hindi" style={{ color: "oklch(0.55 0.04 152)" }}>
-          अभी कोई ऑर्डर नहीं है
+        <p
+          className="font-hindi text-lg font-semibold mb-1"
+          style={{ color: "oklch(0.75 0.04 152)" }}
+        >
+          कोई ऑर्डर नहीं मिला
+        </p>
+        <p
+          className="font-hindi text-sm"
+          style={{ color: "oklch(0.55 0.04 152)" }}
+        >
+          जब ग्राहक ऑर्डर करेंगे, वे यहाँ दिखाई देंगे
         </p>
       </div>
     );
@@ -343,7 +405,7 @@ function OrdersTab() {
 
 // ─── Consultations Tab ────────────────────────────────────────────────────────
 function ConsultationsTab() {
-  const { data: consultations = [], isLoading } = useConsultations();
+  const { data: consultations = [], isLoading, isError } = useConsultations();
   const [seen, setSeen] = useState<Set<number>>(new Set());
 
   const toggleSeen = (idx: number) => {
@@ -356,18 +418,15 @@ function ConsultationsTab() {
   };
 
   if (isLoading) {
+    return <LoadingSpinner label="परामर्श अनुरोध लोड हो रहे हैं..." />;
+  }
+
+  if (isError) {
     return (
-      <div
-        data-ocid="consultations.loading_state"
-        className="flex items-center justify-center py-16"
-      >
-        <div
-          className="animate-spin w-8 h-8 rounded-full border-2"
-          style={{
-            borderColor: "oklch(0.68 0.11 75)",
-            borderTopColor: "transparent",
-          }}
-        />
+      <div data-ocid="consultations.error_state" className="text-center py-16">
+        <p className="font-hindi" style={{ color: "oklch(0.65 0.22 27)" }}>
+          ⚠️ परामर्श लोड करने में समस्या हुई। पेज रिफ्रेश करें।
+        </p>
       </div>
     );
   }
@@ -379,8 +438,17 @@ function ConsultationsTab() {
           className="w-12 h-12 mx-auto mb-3"
           style={{ color: "oklch(0.55 0.04 152)" }}
         />
-        <p className="font-hindi" style={{ color: "oklch(0.55 0.04 152)" }}>
-          अभी कोई परामर्श अनुरोध नहीं है
+        <p
+          className="font-hindi text-lg font-semibold mb-1"
+          style={{ color: "oklch(0.75 0.04 152)" }}
+        >
+          कोई परामर्श अनुरोध नहीं मिला
+        </p>
+        <p
+          className="font-hindi text-sm"
+          style={{ color: "oklch(0.55 0.04 152)" }}
+        >
+          जब ग्राहक परामर्श फॉर्म भरेंगे, वे यहाँ दिखाई देंगे
         </p>
       </div>
     );
@@ -723,6 +791,10 @@ function ProductsTab() {
 export default function AdminDashboard() {
   const [loggedIn, setLoggedIn] = useState(false);
 
+  const goToMain = () => {
+    window.location.href = window.location.href.replace(/#.*$/, "");
+  };
+
   if (!loggedIn) {
     return <LoginGate onLogin={() => setLoggedIn(true)} />;
   }
@@ -768,9 +840,7 @@ export default function AdminDashboard() {
             type="button"
             className="flex items-center gap-1.5 text-sm hover:underline"
             style={{ color: "oklch(0.65 0.05 152)" }}
-            onClick={() => {
-              window.location.hash = "";
-            }}
+            onClick={goToMain}
           >
             <ArrowLeft className="w-4 h-4" />
             मुख्य साइट पर जाएं
@@ -829,7 +899,6 @@ export default function AdminDashboard() {
             <TabsTrigger
               value="orders"
               className="flex-1 font-hindi text-sm data-[state=active]:text-white rounded-lg transition-all"
-              style={{}}
             >
               <ShoppingBag className="w-4 h-4 mr-1.5" />
               ऑर्डर्स
@@ -851,10 +920,14 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="orders">
-            <OrdersTab />
+            <ActorGate>
+              <OrdersTab />
+            </ActorGate>
           </TabsContent>
           <TabsContent value="consultations">
-            <ConsultationsTab />
+            <ActorGate>
+              <ConsultationsTab />
+            </ActorGate>
           </TabsContent>
           <TabsContent value="products">
             <ProductsTab />

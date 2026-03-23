@@ -1,6 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Facebook, Instagram, MapPin, Twitter, Youtube } from "lucide-react";
+import {
+  Facebook,
+  Instagram,
+  MapPin,
+  Phone,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 import { useState } from "react";
 
 const socialLinks = [
@@ -40,7 +47,7 @@ export default function Footer() {
             <p className="font-hindi text-white/70 text-sm leading-relaxed mb-4 max-w-xs">
               हम पुरुषों के स्वास्थ्य के लिए 100% प्राकृतिक आयुर्वेदिक उत्पाद बनाते हैं।
             </p>
-            <div className="flex items-start gap-2 mb-5">
+            <div className="flex items-start gap-2 mb-3">
               <MapPin className="w-4 h-4 text-brand-gold mt-0.5 shrink-0" />
               <div className="font-hindi text-white/80 text-sm leading-relaxed">
                 ओखला फेज 3, दिल्ली
@@ -49,6 +56,15 @@ export default function Footer() {
                   Okhla Phase 3, New Delhi
                 </span>
               </div>
+            </div>
+            <div className="flex items-center gap-2 mb-5">
+              <Phone className="w-4 h-4 text-brand-gold shrink-0" />
+              <a
+                href="tel:+919217127566"
+                className="font-hindi text-white/80 text-sm hover:text-brand-gold transition-colors"
+              >
+                +91 92171 27566
+              </a>
             </div>
             <div className="flex gap-3">
               {socialLinks.map(({ icon: Icon, label, href }) => (

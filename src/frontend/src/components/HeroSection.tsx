@@ -21,8 +21,11 @@ export default function HeroSection({
           src="/assets/generated/hero-ayurveda.dim_1400x700.jpg"
           alt="PR Ayurveda Hero"
           className="w-full h-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-green/90 via-brand-green/70 to-brand-green/20" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-green/85 via-brand-green/50 to-brand-green/10" />
       </div>
 
       {/* Content */}

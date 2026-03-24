@@ -69,28 +69,31 @@ export default function ProductDetailModal({
 
   return (
     <Dialog open={!!product} onOpenChange={(open) => !open && onClose()}>
+      {/* Full-height scrollable dialog on mobile; max-w-3xl on desktop */}
       <DialogContent
-        className="max-w-3xl w-full p-0 overflow-hidden rounded-xl"
+        className="max-w-3xl w-full p-0 overflow-hidden rounded-xl flex flex-col
+          h-[100dvh] sm:h-auto sm:max-h-[90vh]"
         data-ocid="product.dialog"
       >
         {/* Custom close button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition"
+          className="absolute top-3 right-3 z-20 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition"
           aria-label="बंद करें"
           data-ocid="product.close_button"
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>
 
-        <div className="flex flex-col md:flex-row">
-          {/* Left: Image */}
-          <div className="md:w-2/5 bg-gradient-to-br from-green-50 to-amber-50 flex items-center justify-center p-6">
+        {/* Scrollable body */}
+        <div className="flex flex-col md:flex-row flex-1 min-h-0 overflow-y-auto">
+          {/* Image — smaller on mobile */}
+          <div className="md:w-2/5 bg-gradient-to-br from-green-50 to-amber-50 flex items-center justify-center p-4 md:p-6 shrink-0">
             <img
               src={product.image}
               alt={product.name}
-              className="w-full max-w-[280px] object-contain rounded-lg shadow-md"
+              className="w-full max-h-48 md:max-h-[320px] max-w-[240px] md:max-w-[280px] object-contain rounded-lg shadow-md"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
                   "https://placehold.co/400x400/166534/ffffff?text=PR+Ayurveda";
@@ -98,13 +101,13 @@ export default function ProductDetailModal({
             />
           </div>
 
-          {/* Right: Details */}
-          <div className="md:w-3/5 p-6 flex flex-col gap-4 overflow-y-auto max-h-[80vh]">
+          {/* Details */}
+          <div className="md:w-3/5 p-4 md:p-6 flex flex-col gap-4 pb-2">
             <DialogHeader>
               <Badge className="w-fit bg-brand-green text-white font-hindi text-xs mb-1">
                 🌿 PR Ayurveda
               </Badge>
-              <DialogTitle className="font-hindi-serif text-2xl font-bold text-brand-green leading-snug">
+              <DialogTitle className="font-hindi-serif text-xl md:text-2xl font-bold text-brand-green leading-snug">
                 {product.name}
               </DialogTitle>
             </DialogHeader>
@@ -120,7 +123,7 @@ export default function ProductDetailModal({
 
             {/* Price */}
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-brand-green font-hindi-serif">
+              <span className="text-2xl md:text-3xl font-bold text-brand-green font-hindi-serif">
                 ₹{Number(product.price)}
               </span>
               <span className="text-base line-through text-muted-foreground font-hindi">
@@ -181,27 +184,27 @@ export default function ProductDetailModal({
                 🚚 3-5 दिन डिलीवरी
               </span>
             </div>
-
-            {/* CTA */}
-            <div className="flex flex-col gap-2 mt-auto pt-2">
-              <Button
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-hindi font-bold text-base py-6 shadow-md"
-                onClick={handleBuyNow}
-                data-ocid="product.primary_button"
-              >
-                <Zap className="w-5 h-5 mr-2" />
-                अभी खरीदें
-              </Button>
-              <Button
-                className="w-full bg-brand-green hover:bg-brand-green-light text-white font-hindi font-semibold text-sm py-5"
-                onClick={handleAddToCart}
-                data-ocid="product.secondary_button"
-              >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                कार्ट में जोड़ें
-              </Button>
-            </div>
           </div>
+        </div>
+
+        {/* Sticky CTA bar — always visible at bottom */}
+        <div className="sticky bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex flex-col gap-2 z-10 shrink-0">
+          <Button
+            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-hindi font-bold text-base min-h-[48px]"
+            onClick={handleBuyNow}
+            data-ocid="product.primary_button"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            अभी खरीदें
+          </Button>
+          <Button
+            className="w-full bg-brand-green hover:bg-brand-green-light text-white font-hindi font-semibold text-sm min-h-[44px]"
+            onClick={handleAddToCart}
+            data-ocid="product.secondary_button"
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            कार्ट में जोड़ें
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

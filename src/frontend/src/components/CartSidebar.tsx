@@ -107,14 +107,12 @@ export default function CartSidebar({
   const [orderNo, setOrderNo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // When sidebar opens with an initialStep, jump to that step
   useEffect(() => {
     if (open && initialStep) {
       setStep(initialStep);
     }
   }, [open, initialStep]);
 
-  // Safety: if items become empty while on address/payment step, reset to cart
   useEffect(() => {
     if (items.length === 0 && (step === "address" || step === "payment")) {
       setStep("cart");
@@ -202,26 +200,34 @@ export default function CartSidebar({
 
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
+  // Helper to build address input fields with proper mobile attributes
   const addrField = (
     key: keyof Address,
     label: string,
     placeholder: string,
-    type = "text",
+    inputMode: React.HTMLAttributes<HTMLInputElement>["inputMode"] = "text",
+    autoComplete = "on",
   ) => (
     <div className="space-y-1">
       <Label className="font-hindi text-sm">{label}</Label>
       <Input
-        type={type}
+        inputMode={inputMode}
+        autoComplete={autoComplete}
         value={addr[key]}
         onChange={(e) => {
           setAddr((p) => ({ ...p, [key]: e.target.value }));
           setAddrErrors((p) => ({ ...p, [key]: undefined }));
         }}
         placeholder={placeholder}
-        className="font-hindi border-border focus-visible:ring-brand-green"
+        className="font-hindi border-border focus-visible:ring-brand-green min-h-[44px] text-base"
       />
       {addrErrors[key] && (
-        <p className="text-xs text-destructive font-hindi">{addrErrors[key]}</p>
+        <p
+          className="text-xs text-destructive font-hindi"
+          data-ocid="cart.error_state"
+        >
+          {addrErrors[key]}
+        </p>
       )}
     </div>
   );
@@ -270,10 +276,10 @@ export default function CartSidebar({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-background shadow-2xl z-50 flex flex-col"
+            className="fixed right-0 top-0 bottom-0 w-full sm:max-w-md bg-background shadow-2xl z-50 flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-border">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
               <div className="flex items-center gap-2">
                 {step !== "cart" && step !== "success" && (
                   <button
@@ -281,12 +287,12 @@ export default function CartSidebar({
                     onClick={() =>
                       setStep(step === "payment" ? "address" : "cart")
                     }
-                    className="p-1 hover:bg-secondary rounded-full"
+                    className="p-2 hover:bg-secondary rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center"
                   >
                     <ArrowLeft className="w-4 h-4" />
                   </button>
                 )}
-                <h2 className="font-hindi-serif font-bold text-xl text-brand-green">
+                <h2 className="font-hindi-serif font-bold text-lg md:text-xl text-brand-green">
                   {step === "cart" && "आपका कार्ट"}
                   {step === "address" && "डिलीवरी पता"}
                   {step === "payment" && "भुगतान विधि"}
@@ -296,7 +302,7 @@ export default function CartSidebar({
               <button
                 type="button"
                 onClick={handleClose}
-                className="p-2 hover:bg-secondary rounded-full"
+                className="p-2 hover:bg-secondary rounded-full min-w-[44px] min-h-[44px] flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -304,7 +310,7 @@ export default function CartSidebar({
 
             {/* Step indicator */}
             {step !== "success" && (
-              <div className="flex border-b border-border">
+              <div className="flex border-b border-border shrink-0">
                 {STEPS.slice(0, 3).map((s, i) => (
                   <div
                     key={s.id}
@@ -324,7 +330,7 @@ export default function CartSidebar({
             {/* STEP: Cart */}
             {step === "cart" && (
               <>
-                <div className="flex-1 overflow-y-auto p-5">
+                <div className="flex-1 overflow-y-auto p-4">
                   {items.length === 0 ? (
                     <div className="text-center py-16">
                       <ShoppingBag className="w-16 h-16 text-muted mx-auto mb-4" />
@@ -336,7 +342,7 @@ export default function CartSidebar({
                       </p>
                       <Button
                         onClick={handleClose}
-                        className="mt-2 bg-brand-green text-white font-hindi"
+                        className="mt-2 bg-brand-green text-white font-hindi min-h-[44px]"
                         data-ocid="cart.primary_button"
                       >
                         उत्पाद देखें
@@ -347,7 +353,7 @@ export default function CartSidebar({
                       {items.map((item) => (
                         <div
                           key={item.productId.toString()}
-                          className="flex items-center gap-4 bg-card rounded-lg p-4"
+                          className="flex items-center gap-3 bg-card rounded-lg p-3"
                         >
                           <div className="flex-1 min-w-0">
                             <p className="font-hindi font-semibold text-brand-green text-sm truncate">
@@ -357,7 +363,7 @@ export default function CartSidebar({
                               ₹{getProductPrice(item.productId)}
                             </p>
                           </div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
                             <button
                               type="button"
                               onClick={() => {
@@ -369,11 +375,11 @@ export default function CartSidebar({
                                     item.quantity - 1,
                                   );
                               }}
-                              className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-secondary"
+                              className="w-9 h-9 rounded-full border flex items-center justify-center hover:bg-secondary"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
-                            <span className="font-hindi font-medium w-6 text-center">
+                            <span className="font-hindi font-medium w-6 text-center text-sm">
                               {item.quantity}
                             </span>
                             <button
@@ -384,7 +390,7 @@ export default function CartSidebar({
                                   item.quantity + 1,
                                 )
                               }
-                              className="w-7 h-7 rounded-full border flex items-center justify-center hover:bg-secondary"
+                              className="w-9 h-9 rounded-full border flex items-center justify-center hover:bg-secondary"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
@@ -392,7 +398,7 @@ export default function CartSidebar({
                           <button
                             type="button"
                             onClick={() => removeFromCart(item.productId)}
-                            className="p-1.5 text-destructive hover:bg-destructive/10 rounded"
+                            className="p-2 text-destructive hover:bg-destructive/10 rounded min-w-[44px] min-h-[44px] flex items-center justify-center"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -402,7 +408,7 @@ export default function CartSidebar({
                   )}
                 </div>
                 {items.length > 0 && (
-                  <div className="p-5 border-t border-border">
+                  <div className="p-4 border-t border-border shrink-0">
                     <div className="flex justify-between mb-1">
                       <span className="font-hindi text-muted-foreground">
                         उप-योग
@@ -416,7 +422,7 @@ export default function CartSidebar({
                     </p>
                     <Separator className="mb-3" />
                     <Button
-                      className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold py-6 text-base"
+                      className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold min-h-[48px] text-base"
                       onClick={() => setStep("address")}
                       data-ocid="cart.primary_button"
                     >
@@ -430,18 +436,25 @@ export default function CartSidebar({
             {/* STEP: Address */}
             {step === "address" && (
               <>
-                <div className="flex-1 overflow-y-auto p-5 space-y-3">
+                <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   <div className="bg-brand-green/5 border border-brand-green/20 rounded-lg p-3 flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-brand-green shrink-0" />
                     <p className="font-hindi text-sm text-brand-green">
                       कृपया अपना डिलीवरी पता सही से भरें
                     </p>
                   </div>
-                  {addrField("name", "पूरा नाम *", "आपका पूरा नाम")}
+                  {addrField(
+                    "name",
+                    "पूरा नाम *",
+                    "आपका पूरा नाम",
+                    "text",
+                    "name",
+                  )}
                   {addrField(
                     "phone",
                     "मोबाइल नंबर *",
                     "10 अंक का मोबाइल नंबर",
+                    "tel",
                     "tel",
                   )}
                   <div className="space-y-1">
@@ -456,17 +469,33 @@ export default function CartSidebar({
                       }}
                       placeholder="गली नंं, कोलोनी, लैंडमार्क..."
                       rows={3}
-                      className="w-full px-3 py-2 text-sm font-hindi border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-brand-green resize-none"
+                      autoComplete="street-address"
+                      className="w-full px-3 py-2 text-base font-hindi border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-brand-green resize-none min-h-[80px]"
                     />
                     {addrErrors.address && (
-                      <p className="text-xs text-destructive font-hindi">
+                      <p
+                        className="text-xs text-destructive font-hindi"
+                        data-ocid="cart.error_state"
+                      >
                         {addrErrors.address}
                       </p>
                     )}
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    {addrField("city", "शहर *", "आपका शहर")}
-                    {addrField("pincode", "पिन कोड *", "6 अंक का पिन", "tel")}
+                    {addrField(
+                      "city",
+                      "शहर *",
+                      "आपका शहर",
+                      "text",
+                      "address-level2",
+                    )}
+                    {addrField(
+                      "pincode",
+                      "पिन कोड *",
+                      "6 अंक का पिन",
+                      "numeric",
+                      "postal-code",
+                    )}
                   </div>
                   <div className="space-y-1">
                     <Label className="font-hindi text-sm">राज्य *</Label>
@@ -476,7 +505,8 @@ export default function CartSidebar({
                         setAddr((p) => ({ ...p, state: e.target.value }));
                         setAddrErrors((p) => ({ ...p, state: undefined }));
                       }}
-                      className="w-full px-3 py-2 text-sm font-hindi border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-brand-green"
+                      autoComplete="address-level1"
+                      className="w-full px-3 py-2 text-base font-hindi border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-brand-green min-h-[44px]"
                     >
                       <option value="">— राज्य चुनें —</option>
                       {INDIAN_STATES.map((s) => (
@@ -486,15 +516,18 @@ export default function CartSidebar({
                       ))}
                     </select>
                     {addrErrors.state && (
-                      <p className="text-xs text-destructive font-hindi">
+                      <p
+                        className="text-xs text-destructive font-hindi"
+                        data-ocid="cart.error_state"
+                      >
                         {addrErrors.state}
                       </p>
                     )}
                   </div>
                 </div>
-                <div className="p-5 border-t border-border">
+                <div className="p-4 border-t border-border shrink-0">
                   <Button
-                    className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold py-6 text-base"
+                    className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold min-h-[48px] text-base"
                     onClick={() => {
                       if (validateAddr()) setStep("payment");
                     }}
@@ -509,14 +542,14 @@ export default function CartSidebar({
             {/* STEP: Payment */}
             {step === "payment" && (
               <>
-                <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   <div className="space-y-3">
                     {paymentOptions.map(({ id, icon: Icon, label, desc }) => (
                       <button
                         key={id}
                         type="button"
                         onClick={() => setPayMethod(id)}
-                        className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${
+                        className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all min-h-[64px] ${
                           payMethod === id
                             ? "border-brand-green bg-brand-green/5"
                             : "border-border hover:border-brand-green/40"
@@ -555,7 +588,9 @@ export default function CartSidebar({
                         value={upiId}
                         onChange={(e) => setUpiId(e.target.value)}
                         placeholder="example@upi"
-                        className="font-hindi"
+                        inputMode="email"
+                        autoComplete="off"
+                        className="font-hindi min-h-[44px] text-base"
                       />
                       <p className="text-xs text-muted-foreground font-hindi">
                         उदा.: 9999999999@ybl, name@okaxis
@@ -575,7 +610,9 @@ export default function CartSidebar({
                             )
                           }
                           placeholder="1234 5678 9012 3456"
-                          className="font-hindi tracking-widest"
+                          inputMode="numeric"
+                          autoComplete="cc-number"
+                          className="font-hindi tracking-widest min-h-[44px] text-base"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
@@ -585,7 +622,9 @@ export default function CartSidebar({
                             value={cardExpiry}
                             onChange={(e) => setCardExpiry(e.target.value)}
                             placeholder="MM/YY"
-                            className="font-hindi"
+                            inputMode="numeric"
+                            autoComplete="cc-exp"
+                            className="font-hindi min-h-[44px] text-base"
                             maxLength={5}
                           />
                         </div>
@@ -599,7 +638,9 @@ export default function CartSidebar({
                               )
                             }
                             placeholder="123"
-                            className="font-hindi"
+                            inputMode="numeric"
+                            autoComplete="cc-csc"
+                            className="font-hindi min-h-[44px] text-base"
                             type="password"
                           />
                         </div>
@@ -635,9 +676,9 @@ export default function CartSidebar({
                     </div>
                   </div>
                 </div>
-                <div className="p-5 border-t border-border">
+                <div className="p-4 border-t border-border shrink-0">
                   <Button
-                    className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold py-6 text-base"
+                    className="w-full bg-brand-gold hover:bg-brand-gold-light text-white font-hindi font-semibold min-h-[48px] text-base"
                     onClick={handlePlaceOrder}
                     disabled={isSubmitting}
                     data-ocid="cart.submit_button"
@@ -652,7 +693,7 @@ export default function CartSidebar({
 
             {/* STEP: Success */}
             {step === "success" && (
-              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
+              <div className="flex-1 flex flex-col items-center justify-center p-6 text-center overflow-y-auto">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -717,7 +758,7 @@ export default function CartSidebar({
                   </div>
                 </div>
                 <Button
-                  className="w-full bg-brand-green text-white font-hindi"
+                  className="w-full bg-brand-green text-white font-hindi min-h-[48px]"
                   onClick={handleClose}
                   data-ocid="cart.primary_button"
                 >

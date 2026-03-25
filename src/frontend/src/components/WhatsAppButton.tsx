@@ -1,10 +1,11 @@
+import { getSettings } from "@/hooks/useSiteSettings";
 import { useState } from "react";
-
-const WA_LINK =
-  "https://wa.me/919217127566?text=नमस्ते%20PR%20Ayurveda%2C%20मुझे%20आपके%20उत्पादों%20के%20बारे%20में%20जानकारी%20चाहिए";
 
 export default function WhatsAppButton() {
   const [hovered, setHovered] = useState(false);
+  const settings = getSettings();
+  const waNumber = settings.whatsappNumber || "919217127566";
+  const WA_LINK = `https://wa.me/${waNumber}?text=नमस्ते%20PR%20Ayurveda%2C%20मुझे%20आपके%20उत्पादों%20के%20बारे%20में%20जानकारी%20चाहिए`;
 
   return (
     <a

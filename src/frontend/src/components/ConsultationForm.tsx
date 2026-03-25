@@ -49,6 +49,15 @@ export default function ConsultationForm() {
         timestamp: Date.now(),
       });
       localStorage.setItem("pr_consultations", JSON.stringify(existing));
+      // Send WhatsApp notification to admin
+      try {
+        const adminPhone = "919217127566";
+        const waMsg = `📋 नई परामर्श!\nनाम: ${form.name}\nफोन: ${form.phone}\nसमस्या: ${form.message}`;
+        window.open(
+          `https://wa.me/${adminPhone}?text=${encodeURIComponent(waMsg)}`,
+          "_blank",
+        );
+      } catch (_) {}
 
       toast.success("आपकी परामर्श अनुरोध सफलतापूर्वक भेज दिया गया!");
       setForm({ name: "", phone: "", message: "" });

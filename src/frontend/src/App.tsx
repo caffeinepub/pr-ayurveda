@@ -13,6 +13,8 @@ import HeroSection from "./components/HeroSection";
 import HowItWorks from "./components/HowItWorks";
 import MyOrders from "./components/MyOrders";
 import ProductsSection from "./components/ProductsSection";
+import PromoBannersDisplay from "./components/PromoBannersDisplay";
+import SocialPromoSection from "./components/SocialPromoSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import TrustBadges from "./components/TrustBadges";
 import WelcomePopup from "./components/WelcomePopup";
@@ -68,6 +70,7 @@ export default function App() {
         />
         <TrustBadges />
         <WhyChooseUs />
+        <PromoBannersDisplay />
         <ProductsSection
           searchQuery={searchQuery}
           cart={cart}
@@ -80,6 +83,7 @@ export default function App() {
         <FAQSection />
         <ConsultationForm />
       </main>
+      <SocialPromoSection />
       <Footer onAdminOpen={() => setAdminOpen(true)} />
       <CartSidebar
         open={cartOpen}

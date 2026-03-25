@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { staticProducts } from "@/data/staticData";
+import { getAdminProducts } from "@/hooks/useAdminProducts";
 import type { useLocalCart } from "@/hooks/useLocalCart";
 import { ShoppingCart, Star } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import ProductDetailModal from "./ProductDetailModal";
 
-type Product = (typeof staticProducts)[0];
+type Product = ReturnType<typeof getAdminProducts>[0];
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -47,14 +47,15 @@ export default function ProductsSection({
   onBuyNow,
 }: ProductsSectionProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const allProducts = getAdminProducts();
 
   const products = searchQuery.trim()
-    ? staticProducts.filter(
+    ? allProducts.filter(
         (p) =>
           p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           p.description.toLowerCase().includes(searchQuery.toLowerCase()),
       )
-    : staticProducts;
+    : allProducts;
 
   const handleAddToCart = (
     e: React.MouseEvent,

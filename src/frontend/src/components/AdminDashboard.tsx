@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   ArrowLeft,
   BarChart3,
@@ -14,12 +15,16 @@ import {
   IndianRupee,
   Leaf,
   MapPin,
+  Megaphone,
   Package,
   Pencil,
   Phone,
   Plus,
+  RefreshCw,
   Save,
+  Settings,
   ShoppingBag,
+  Tag,
   Trash2,
   TrendingUp,
   Truck,
@@ -27,8 +32,12 @@ import {
   X,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { staticProducts } from "../data/staticData";
+import { getAdminProducts, useAdminProducts } from "../hooks/useAdminProducts";
+import { getSettings, useSiteSettings } from "../hooks/useSiteSettings";
+import type { Coupon, PromoBanner } from "../hooks/useSiteSettings";
 
 const STATUSES = ["लंबित", "प्रोसेसिंग", "डिलीवर्ड"] as const;
 type Status = (typeof STATUSES)[number];
@@ -584,6 +593,27 @@ function ConsultationsTab() {
     });
   };
 
+  const deleteConsultation = (idx: number) => {
+    const confirmed = window.confirm("क्या आप यह परामर्श हटाना चाहते हैं?");
+    if (!confirmed) return;
+    const updated = [...consultations];
+    updated.splice(idx, 1);
+    setConsultations(updated);
+    try {
+      // Save in original (non-reversed) order back to localStorage
+      const raw = localStorage.getItem("pr_consultations");
+      if (raw) {
+        const original = JSON.parse(raw) as LocalConsultation[];
+        const toDelete = consultations[idx];
+        const newOriginal = original.filter(
+          (c) =>
+            !(c.name === toDelete.name && c.timestamp === toDelete.timestamp),
+        );
+        localStorage.setItem("pr_consultations", JSON.stringify(newOriginal));
+      }
+    } catch {}
+  };
+
   if (!consultations.length) {
     return (
       <div data-ocid="consultations.empty_state" className="text-center py-16">
@@ -653,8 +683,22 @@ function ConsultationsTab() {
                 <span>{c.phone}</span>
               </div>
             </div>
-            <div className="text-xs" style={{ color: "oklch(0.55 0.04 152)" }}>
-              {c.date}
+            <div className="flex items-center gap-2">
+              <div
+                className="text-xs"
+                style={{ color: "oklch(0.55 0.04 152)" }}
+              >
+                {c.date}
+              </div>
+              <button
+                type="button"
+                data-ocid={`consultations.delete_button.${idx + 1}`}
+                className="text-xs px-2 py-0.5 rounded font-hindi bg-red-950 text-red-400 border border-red-900 hover:bg-red-900 transition-colors"
+                onClick={() => deleteConsultation(idx)}
+              >
+                <Trash2 className="inline w-3 h-3 mr-1" />
+                हटाएं
+              </button>
             </div>
           </div>
           <p
@@ -678,10 +722,13 @@ type LocalProduct = {
   benefits: string;
   ingredients: string;
   image?: string;
+  rating?: number;
+  reviews?: number;
 };
 
 function ProductsTab() {
-  const [products, setProducts] = useState<LocalProduct[]>(staticProducts);
+  const { products: initialProducts, saveProducts } = useAdminProducts();
+  const [products, setProducts] = useState<LocalProduct[]>(initialProducts);
   const [editing, setEditing] = useState<bigint | null>(null);
   const [editName, setEditName] = useState("");
   const [editPrice, setEditPrice] = useState("");
@@ -697,21 +744,31 @@ function ProductsTab() {
   };
 
   const saveEdit = (id: bigint) => {
-    setProducts((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? { ...p, name: editName, price: BigInt(Number(editPrice) || 0) }
-          : p,
-      ),
+    const updated = products.map((p) =>
+      p.id === id
+        ? { ...p, name: editName, price: BigInt(Number(editPrice) || 0) }
+        : p,
     );
+    setProducts(updated);
+    saveProducts(updated as never[]);
     setEditing(null);
+    toast.success("प्रोडक्ट सहेजा गया!");
+  };
+
+  const deleteProduct = (id: bigint) => {
+    const confirmed = window.confirm("क्या आप यह प्रोडक्ट हटाना चाहते हैं?");
+    if (!confirmed) return;
+    const updated = products.filter((p) => p.id !== id);
+    setProducts(updated);
+    saveProducts(updated as never[]);
+    toast.success("प्रोडक्ट हटा दिया गया!");
   };
 
   const addProduct = () => {
     if (!newName.trim() || !newPrice.trim()) return;
     const newId = BigInt(products.length + 100);
-    setProducts((prev) => [
-      ...prev,
+    const updated = [
+      ...products,
       {
         id: newId,
         name: newName,
@@ -719,12 +776,18 @@ function ProductsTab() {
         description: newDesc,
         benefits: "",
         ingredients: "",
+        image: "",
+        rating: 4,
+        reviews: 0,
       },
-    ]);
+    ];
+    setProducts(updated);
+    saveProducts(updated as never[]);
     setNewName("");
     setNewPrice("");
     setNewDesc("");
     setShowAdd(false);
+    toast.success("नया प्रोडक्ट जोड़ा गया!");
   };
 
   return (
@@ -896,16 +959,28 @@ function ProductsTab() {
                   <Save className="w-3 h-3 mr-1" /> सहेजें
                 </Button>
               ) : (
-                <Button
-                  data-ocid={`products.edit_button.${idx + 1}`}
-                  size="sm"
-                  variant="ghost"
-                  className="shrink-0 h-7"
-                  style={{ color: "oklch(0.65 0.05 152)" }}
-                  onClick={() => startEdit(p)}
-                >
-                  <Pencil className="w-3.5 h-3.5" />
-                </Button>
+                <div className="flex gap-1">
+                  <Button
+                    data-ocid={`products.edit_button.${idx + 1}`}
+                    size="sm"
+                    variant="ghost"
+                    className="shrink-0 h-7"
+                    style={{ color: "oklch(0.65 0.05 152)" }}
+                    onClick={() => startEdit(p)}
+                  >
+                    <Pencil className="w-3.5 h-3.5" />
+                  </Button>
+                  <Button
+                    data-ocid={`products.delete_button.${idx + 1}`}
+                    size="sm"
+                    variant="ghost"
+                    className="shrink-0 h-7"
+                    style={{ color: "oklch(0.55 0.15 25)" }}
+                    onClick={() => deleteProduct(p.id)}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </Button>
+                </div>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -940,9 +1015,652 @@ function ProductsTab() {
   );
 }
 
+// ─── Settings Tab ─────────────────────────────────────────────────────────────
+function SettingsTab() {
+  const { settings, updateSettings } = useSiteSettings();
+  const [announcementText, setAnnouncementText] = useState(
+    settings.announcementText,
+  );
+  const [flashSaleEnabled, setFlashSaleEnabled] = useState(
+    settings.flashSaleEnabled,
+  );
+  const [whatsappNumber, setWhatsappNumber] = useState(settings.whatsappNumber);
+  const [discountCode, setDiscountCode] = useState(settings.discountCode);
+  const [discountAmount, setDiscountAmount] = useState(
+    String(settings.discountAmount),
+  );
+
+  const handleSave = () => {
+    updateSettings({
+      announcementText,
+      flashSaleEnabled,
+      whatsappNumber,
+      discountCode,
+      discountAmount: Number(discountAmount) || 0,
+    });
+    toast.success("सेटिंग्स सहेजी गई! अगली बार पेज लोड होने पर लागू होंगी।");
+  };
+
+  const inputStyle = {
+    background: "oklch(0.22 0.045 152)",
+    color: "oklch(0.96 0.01 80)",
+    borderColor: "oklch(0.30 0.06 152)",
+  };
+
+  const labelStyle = { color: "oklch(0.75 0.04 152)" };
+
+  return (
+    <div className="space-y-4 max-w-xl">
+      <Card className="border-0" style={{ background: "oklch(0.18 0.04 152)" }}>
+        <CardHeader className="pb-3">
+          <CardTitle
+            className="text-sm font-hindi"
+            style={{ color: "oklch(0.96 0.01 80)" }}
+          >
+            <Settings
+              className="inline w-4 h-4 mr-2"
+              style={{ color: "oklch(0.68 0.11 75)" }}
+            />
+            साइट सेटिंग्स
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Announcement Text */}
+          <div>
+            <Label className="font-hindi text-sm mb-1 block" style={labelStyle}>
+              घोषणा बार का टेक्स्ट
+            </Label>
+            <Textarea
+              data-ocid="settings.textarea"
+              value={announcementText}
+              onChange={(e) => setAnnouncementText(e.target.value)}
+              className="font-hindi text-sm border resize-none"
+              style={inputStyle}
+              rows={2}
+            />
+          </div>
+
+          {/* Flash Sale Toggle */}
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="font-hindi text-sm" style={labelStyle}>
+                फ्लैश सेल चालू/बंद
+              </Label>
+              <p
+                className="text-xs font-hindi mt-0.5"
+                style={{ color: "oklch(0.55 0.04 152)" }}
+              >
+                चालू रहने पर टाइमर दिखेगा
+              </p>
+            </div>
+            <button
+              type="button"
+              data-ocid="settings.toggle"
+              onClick={() => setFlashSaleEnabled((v) => !v)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                flashSaleEnabled ? "bg-green-600" : "bg-gray-600"
+              }`}
+              aria-label="फ्लैश सेल"
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  flashSaleEnabled ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
+
+          {/* WhatsApp Number */}
+          <div>
+            <Label className="font-hindi text-sm mb-1 block" style={labelStyle}>
+              WhatsApp नंबर (केवल अंक)
+            </Label>
+            <Input
+              data-ocid="settings.input"
+              value={whatsappNumber}
+              onChange={(e) =>
+                setWhatsappNumber(e.target.value.replace(/\D/g, ""))
+              }
+              placeholder="919217127566"
+              className="font-hindi text-sm border"
+              style={inputStyle}
+            />
+            <p
+              className="text-xs font-hindi mt-1"
+              style={{ color: "oklch(0.55 0.04 152)" }}
+            >
+              उदाहरण: 919217127566 (91 + 10 अंक)
+            </p>
+          </div>
+
+          {/* Discount Code */}
+          <div>
+            <Label className="font-hindi text-sm mb-1 block" style={labelStyle}>
+              डिस्काउंट कोड
+            </Label>
+            <Input
+              data-ocid="settings.input"
+              value={discountCode}
+              onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
+              placeholder="PRAYUR100"
+              className="font-hindi text-sm border"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Discount Amount */}
+          <div>
+            <Label className="font-hindi text-sm mb-1 block" style={labelStyle}>
+              डिस्काउंट राशि (₹)
+            </Label>
+            <Input
+              data-ocid="settings.input"
+              type="number"
+              value={discountAmount}
+              onChange={(e) => setDiscountAmount(e.target.value)}
+              placeholder="100"
+              className="font-hindi text-sm border"
+              style={inputStyle}
+            />
+          </div>
+
+          {/* Save Button */}
+          <Button
+            data-ocid="settings.save_button"
+            className="w-full font-hindi"
+            style={{
+              background: "oklch(0.27 0.065 152)",
+              color: "oklch(0.96 0.01 80)",
+            }}
+            onClick={handleSave}
+          >
+            <Save className="w-4 h-4 mr-2" />
+            सेटिंग्स सहेजें
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 interface AdminDashboardProps {
   onExit?: () => void;
+}
+
+// ─── Promotions Tab ───────────────────────────────────────────────────────────
+function PromotionsTab() {
+  const { updateSettings } = useSiteSettings();
+  const [coupons, setCoupons] = React.useState<Coupon[]>(
+    () => getSettings().coupons || [],
+  );
+  const [banners, setBanners] = React.useState<PromoBanner[]>(
+    () => getSettings().promoBanners || [],
+  );
+
+  // Coupon form
+  const [couponCode, setCouponCode] = React.useState("");
+  const [couponType, setCouponType] = React.useState<"flat" | "percent">(
+    "flat",
+  );
+  const [couponAmount, setCouponAmount] = React.useState("");
+  const [couponExpiry, setCouponExpiry] = React.useState("");
+
+  // Banner form
+  const [bannerTitle, setBannerTitle] = React.useState("");
+  const [bannerSubtitle, setBannerSubtitle] = React.useState("");
+  const [bannerBadge, setBannerBadge] = React.useState("");
+  const [bannerColor, setBannerColor] = React.useState("bg-red-600");
+
+  const saveCoupons = (updated: Coupon[]) => {
+    setCoupons(updated);
+    updateSettings({ coupons: updated });
+  };
+
+  const saveBanners = (updated: PromoBanner[]) => {
+    setBanners(updated);
+    updateSettings({ promoBanners: updated });
+  };
+
+  const addCoupon = () => {
+    if (!couponCode.trim() || !couponAmount) {
+      toast.error("कोड और राशि अनिवार्य है");
+      return;
+    }
+    const newCoupon: Coupon = {
+      id: Date.now().toString(),
+      code: couponCode.trim().toUpperCase(),
+      type: couponType,
+      amount: Number(couponAmount),
+      expiry: couponExpiry,
+      active: true,
+    };
+    saveCoupons([...coupons, newCoupon]);
+    setCouponCode("");
+    setCouponAmount("");
+    setCouponExpiry("");
+    toast.success("कूपन जोड़ा गया!");
+  };
+
+  const toggleCoupon = (id: string) => {
+    saveCoupons(
+      coupons.map((c) => (c.id === id ? { ...c, active: !c.active } : c)),
+    );
+  };
+
+  const deleteCoupon = (id: string) => {
+    if (confirm("यह कूपन हटाएं?"))
+      saveCoupons(coupons.filter((c) => c.id !== id));
+  };
+
+  const addBanner = () => {
+    if (!bannerTitle.trim()) {
+      toast.error("शीर्षक अनिवार्य है");
+      return;
+    }
+    const newBanner: PromoBanner = {
+      id: Date.now().toString(),
+      title: bannerTitle.trim(),
+      subtitle: bannerSubtitle.trim(),
+      badge: bannerBadge.trim(),
+      color: bannerColor,
+      active: true,
+    };
+    saveBanners([...banners, newBanner]);
+    setBannerTitle("");
+    setBannerSubtitle("");
+    setBannerBadge("");
+    toast.success("बैनर जोड़ा गया!");
+  };
+
+  const toggleBanner = (id: string) => {
+    saveBanners(
+      banners.map((b) => (b.id === id ? { ...b, active: !b.active } : b)),
+    );
+  };
+
+  const deleteBanner = (id: string) => {
+    if (confirm("यह बैनर हटाएं?"))
+      saveBanners(banners.filter((b) => b.id !== id));
+  };
+
+  const cardStyle = { background: "oklch(0.18 0.04 152)" };
+  const inputStyle = {
+    background: "oklch(0.22 0.045 152)",
+    color: "oklch(0.96 0.01 80)",
+    borderColor: "oklch(0.30 0.06 152)",
+  };
+  const labelStyle = { color: "oklch(0.75 0.04 152)" };
+  const textStyle = { color: "oklch(0.96 0.01 80)" };
+  const mutedStyle = { color: "oklch(0.55 0.04 152)" };
+
+  const colorOptions = [
+    { value: "bg-red-600", label: "लाल" },
+    { value: "bg-blue-600", label: "नीला" },
+    { value: "bg-purple-600", label: "बैंगनी" },
+    { value: "bg-orange-500", label: "नारंगी" },
+    { value: "bg-green-700", label: "हरा" },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Coupon Codes */}
+      <Card className="border-0" style={cardStyle}>
+        <CardHeader className="pb-3">
+          <CardTitle
+            className="text-sm font-hindi flex items-center gap-2"
+            style={textStyle}
+          >
+            <Tag className="w-4 h-4" style={{ color: "oklch(0.68 0.11 75)" }} />
+            कूपन कोड
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Add coupon form */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="col-span-2 sm:col-span-1">
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                कोड (uppercase)
+              </Label>
+              <Input
+                data-ocid="promotions.input"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                placeholder="जैसे: SAVE50"
+                className="font-hindi text-sm border"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                प्रकार
+              </Label>
+              <select
+                value={couponType}
+                onChange={(e) =>
+                  setCouponType(e.target.value as "flat" | "percent")
+                }
+                className="w-full rounded-md px-3 py-2 text-sm font-hindi border"
+                style={inputStyle}
+              >
+                <option value="flat">फ्लैट (₹)</option>
+                <option value="percent">प्रतिशत (%)</option>
+              </select>
+            </div>
+            <div>
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                राशि
+              </Label>
+              <Input
+                value={couponAmount}
+                onChange={(e) => setCouponAmount(e.target.value)}
+                placeholder="100"
+                type="number"
+                className="font-hindi text-sm border"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                समाप्ति (वैकल्पिक)
+              </Label>
+              <Input
+                value={couponExpiry}
+                onChange={(e) => setCouponExpiry(e.target.value)}
+                type="date"
+                className="font-hindi text-sm border"
+                style={inputStyle}
+              />
+            </div>
+          </div>
+          <Button
+            data-ocid="promotions.submit_button"
+            onClick={addCoupon}
+            className="font-hindi font-semibold border-0"
+            style={{
+              background: "oklch(0.27 0.065 152)",
+              color: "oklch(0.96 0.01 80)",
+            }}
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            कूपन जोड़ें
+          </Button>
+
+          {/* Coupons table */}
+          {coupons.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr style={mutedStyle}>
+                    <th className="text-left pb-2 font-hindi font-medium">
+                      कोड
+                    </th>
+                    <th className="text-left pb-2 font-hindi font-medium">
+                      छूट
+                    </th>
+                    <th className="text-left pb-2 font-hindi font-medium">
+                      समाप्ति
+                    </th>
+                    <th className="text-left pb-2 font-hindi font-medium">
+                      स्थिति
+                    </th>
+                    <th className="pb-2" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {coupons.map((c, idx) => (
+                    <tr
+                      key={c.id}
+                      className="border-t"
+                      style={{ borderColor: "oklch(0.25 0.05 152)" }}
+                    >
+                      <td
+                        className="py-2 font-mono font-bold"
+                        style={{ color: "oklch(0.68 0.11 75)" }}
+                      >
+                        {c.code}
+                      </td>
+                      <td className="py-2 font-hindi" style={textStyle}>
+                        {c.type === "flat" ? `₹${c.amount}` : `${c.amount}%`}
+                      </td>
+                      <td
+                        className="py-2 font-hindi text-xs"
+                        style={mutedStyle}
+                      >
+                        {c.expiry || "—"}
+                      </td>
+                      <td className="py-2">
+                        <button
+                          type="button"
+                          data-ocid={`promotions.toggle.${idx + 1}`}
+                          onClick={() => toggleCoupon(c.id)}
+                          className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors"
+                          style={{
+                            background: c.active
+                              ? "oklch(0.55 0.15 152)"
+                              : "oklch(0.30 0.05 152)",
+                          }}
+                        >
+                          <span
+                            className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${c.active ? "translate-x-4" : "translate-x-1"}`}
+                          />
+                        </button>
+                      </td>
+                      <td className="py-2 pl-2">
+                        <button
+                          type="button"
+                          data-ocid={`promotions.delete_button.${idx + 1}`}
+                          onClick={() => deleteCoupon(c.id)}
+                          className="p-1 rounded hover:bg-red-900/30"
+                          style={{ color: "oklch(0.65 0.22 27)" }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {coupons.length === 0 && (
+            <p
+              className="font-hindi text-sm text-center py-4"
+              style={mutedStyle}
+            >
+              कोई कूपन नहीं
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Promo Banners */}
+      <Card className="border-0" style={cardStyle}>
+        <CardHeader className="pb-3">
+          <CardTitle
+            className="text-sm font-hindi flex items-center gap-2"
+            style={textStyle}
+          >
+            <Megaphone
+              className="w-4 h-4"
+              style={{ color: "oklch(0.68 0.11 75)" }}
+            />
+            प्रोमो बैनर
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* Add banner form */}
+          <div className="grid grid-cols-2 gap-2">
+            <div className="col-span-2">
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                शीर्षक *
+              </Label>
+              <Input
+                value={bannerTitle}
+                onChange={(e) => setBannerTitle(e.target.value)}
+                placeholder="जैसे: गर्मी की सेल!"
+                className="font-hindi text-sm border"
+                style={inputStyle}
+              />
+            </div>
+            <div className="col-span-2">
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                उप-शीर्षक
+              </Label>
+              <Input
+                value={bannerSubtitle}
+                onChange={(e) => setBannerSubtitle(e.target.value)}
+                placeholder="50% तक की छूट"
+                className="font-hindi text-sm border"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                बैज टेक्स्ट
+              </Label>
+              <Input
+                value={bannerBadge}
+                onChange={(e) => setBannerBadge(e.target.value)}
+                placeholder="HOT DEAL"
+                className="font-hindi text-sm border"
+                style={inputStyle}
+              />
+            </div>
+            <div>
+              <Label
+                className="font-hindi text-xs mb-1 block"
+                style={labelStyle}
+              >
+                रंग
+              </Label>
+              <select
+                value={bannerColor}
+                onChange={(e) => setBannerColor(e.target.value)}
+                className="w-full rounded-md px-3 py-2 text-sm font-hindi border"
+                style={inputStyle}
+              >
+                {colorOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <Button
+            data-ocid="promotions.secondary_button"
+            onClick={addBanner}
+            className="font-hindi font-semibold border-0"
+            style={{
+              background: "oklch(0.27 0.065 152)",
+              color: "oklch(0.96 0.01 80)",
+            }}
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            बैनर जोड़ें
+          </Button>
+
+          {/* Banners list */}
+          {banners.length > 0 && (
+            <div className="space-y-2">
+              {banners.map((b, idx) => (
+                <div
+                  key={b.id}
+                  className="flex items-center gap-3 p-3 rounded-lg"
+                  style={{ background: "oklch(0.22 0.045 152)" }}
+                >
+                  <div
+                    className="w-3 h-8 rounded shrink-0"
+                    style={{
+                      background: b.color.includes("red")
+                        ? "#dc2626"
+                        : b.color.includes("blue")
+                          ? "#2563eb"
+                          : b.color.includes("purple")
+                            ? "#9333ea"
+                            : b.color.includes("orange")
+                              ? "#f97316"
+                              : "#15803d",
+                    }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p
+                      className="font-hindi font-semibold text-sm truncate"
+                      style={textStyle}
+                    >
+                      {b.title}
+                    </p>
+                    {b.subtitle && (
+                      <p
+                        className="font-hindi text-xs truncate"
+                        style={mutedStyle}
+                      >
+                        {b.subtitle}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    data-ocid={`promotions.toggle.${idx + 1}`}
+                    onClick={() => toggleBanner(b.id)}
+                    className="relative inline-flex h-5 w-9 items-center rounded-full transition-colors shrink-0"
+                    style={{
+                      background: b.active
+                        ? "oklch(0.55 0.15 152)"
+                        : "oklch(0.30 0.05 152)",
+                    }}
+                  >
+                    <span
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white transition-transform ${b.active ? "translate-x-4" : "translate-x-1"}`}
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    data-ocid={`promotions.delete_button.${idx + 1}`}
+                    onClick={() => deleteBanner(b.id)}
+                    className="p-1 rounded hover:bg-red-900/30 shrink-0"
+                    style={{ color: "oklch(0.65 0.22 27)" }}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          {banners.length === 0 && (
+            <p
+              className="font-hindi text-sm text-center py-4"
+              style={mutedStyle}
+            >
+              कोई बैनर नहीं
+            </p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 }
 
 export default function AdminDashboard({ onExit }: AdminDashboardProps) {
@@ -950,24 +1668,30 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
   const [orders, setOrders] = useState<LocalOrder[]>([]);
   const [consultCount, setConsultCount] = useState(0);
 
+  const loadData = useCallback(() => {
+    try {
+      const parsed = JSON.parse(
+        localStorage.getItem("pr_orders") || "[]",
+      ) as LocalOrder[];
+      setOrders([...parsed].reverse());
+    } catch {
+      setOrders([]);
+    }
+    try {
+      const consults = JSON.parse(
+        localStorage.getItem("pr_consultations") || "[]",
+      ) as unknown[];
+      setConsultCount(consults.length);
+    } catch {}
+  }, []);
+
   useEffect(() => {
     if (loggedIn) {
-      try {
-        const parsed = JSON.parse(
-          localStorage.getItem("pr_orders") || "[]",
-        ) as LocalOrder[];
-        setOrders([...parsed].reverse());
-      } catch {
-        setOrders([]);
-      }
-      try {
-        const consults = JSON.parse(
-          localStorage.getItem("pr_consultations") || "[]",
-        ) as unknown[];
-        setConsultCount(consults.length);
-      } catch {}
+      loadData();
+      const interval = setInterval(loadData, 15000);
+      return () => clearInterval(interval);
     }
-  }, [loggedIn]);
+  }, [loggedIn, loadData]);
 
   const handleOrderDelete = (orderNo: string) => {
     try {
@@ -1075,6 +1799,17 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
             मुख्य साइट
           </button>
           <Button
+            size="sm"
+            variant="ghost"
+            className="text-xs font-hindi flex items-center gap-1"
+            style={{ color: "oklch(0.68 0.11 75)" }}
+            onClick={loadData}
+            title="नए ऑर्डर चेक करें"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            रिफ्रेश
+          </Button>
+          <Button
             data-ocid="admin.secondary_button"
             size="sm"
             variant="ghost"
@@ -1107,7 +1842,7 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
             {
               icon: Package,
               label: "प्रोडक्ट्स",
-              value: String(staticProducts.length),
+              value: String(getAdminProducts().length),
               color: "oklch(0.55 0.17 160)",
             },
             {
@@ -1184,6 +1919,20 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
               <Package className="w-4 h-4 mr-1.5" />
               प्रोडक्ट्स
             </TabsTrigger>
+            <TabsTrigger
+              value="settings"
+              className="flex-1 font-hindi text-sm data-[state=active]:text-white rounded-lg"
+            >
+              <Settings className="w-4 h-4 mr-1.5" />
+              सेटिंग्स
+            </TabsTrigger>
+            <TabsTrigger
+              value="promotions"
+              className="flex-1 font-hindi text-sm data-[state=active]:text-white rounded-lg"
+            >
+              <Megaphone className="w-4 h-4 mr-1.5" />
+              प्रमोशन
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="orders">
@@ -1194,6 +1943,12 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
           </TabsContent>
           <TabsContent value="products">
             <ProductsTab />
+          </TabsContent>
+          <TabsContent value="settings">
+            <SettingsTab />
+          </TabsContent>
+          <TabsContent value="promotions">
+            <PromotionsTab />
           </TabsContent>
         </Tabs>
       </main>

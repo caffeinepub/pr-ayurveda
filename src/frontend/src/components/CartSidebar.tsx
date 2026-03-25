@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { staticProducts } from "@/data/staticData";
 import type { useLocalCart } from "@/hooks/useLocalCart";
+import { getSettings } from "@/hooks/useSiteSettings";
 import {
   ArrowLeft,
   CheckCircle,
@@ -13,6 +14,7 @@ import {
   Plus,
   ShoppingBag,
   Smartphone,
+  Tag,
   Trash2,
   Truck,
   X,
@@ -106,6 +108,12 @@ export default function CartSidebar({
   const [cardCvv, setCardCvv] = useState("");
   const [orderNo, setOrderNo] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [couponMsg, setCouponMsg] = useState<{
+    type: "ok" | "err";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     if (open && initialStep) {
@@ -146,7 +154,7 @@ export default function CartSidebar({
       const no = `PR${Date.now().toString().slice(-6)}`;
       setOrderNo(no);
       const existing = JSON.parse(localStorage.getItem("pr_orders") || "[]");
-      const capturedTotal = total;
+      const capturedTotal = finalTotal;
       existing.push({
         orderNo: no,
         date: new Date().toLocaleDateString("hi-IN"),
@@ -168,6 +176,18 @@ export default function CartSidebar({
         status: "लंबित",
       });
       localStorage.setItem("pr_orders", JSON.stringify(existing));
+      // Send WhatsApp notification to admin
+      try {
+        const adminPhone = "919217127566";
+        const itemsList = items
+          .map((item) => `${getProductName(item.productId)} x${item.quantity}`)
+          .join(", ");
+        const waMsg = `🛒 नया ऑर्डर!\nऑर्डर नं: ${no}\nनाम: ${addr.name}\nफोन: ${addr.phone}\nपता: ${addr.address}, ${addr.city}, ${addr.state} - ${addr.pincode}\nसामान: ${itemsList}\nकुल: ₹${capturedTotal}\nभुगतान: ${payMethod === "cod" ? "COD" : payMethod === "upi" ? `UPI (${upiId})` : "Card"}`;
+        window.open(
+          `https://wa.me/${adminPhone}?text=${encodeURIComponent(waMsg)}`,
+          "_blank",
+        );
+      } catch (_) {}
       setConfirmedTotal(capturedTotal);
       clearCart();
       setStep("success");
@@ -197,6 +217,46 @@ export default function CartSidebar({
     }
     onClose();
   };
+
+  const applyCoupon = () => {
+    const settings = getSettings();
+    const code = couponCode.trim().toUpperCase();
+    const now = new Date();
+
+    // Check admin coupons
+    const adminCoupon = (settings.coupons || []).find(
+      (c) => c.active && c.code.toUpperCase() === code,
+    );
+    if (adminCoupon) {
+      if (adminCoupon.expiry && new Date(adminCoupon.expiry) < now) {
+        setCouponMsg({ type: "err", text: "यह कूपन समाप्त हो गया है" });
+        setAppliedDiscount(0);
+        return;
+      }
+      const disc =
+        adminCoupon.type === "percent"
+          ? Math.round((total * adminCoupon.amount) / 100)
+          : adminCoupon.amount;
+      setAppliedDiscount(disc);
+      setCouponMsg({ type: "ok", text: `कूपन लागू! ₹${disc} की छूट मिली` });
+      return;
+    }
+
+    // Check legacy discount code
+    if (code === settings.discountCode.toUpperCase()) {
+      setAppliedDiscount(settings.discountAmount);
+      setCouponMsg({
+        type: "ok",
+        text: `कूपन लागू! ₹${settings.discountAmount} की छूट मिली`,
+      });
+      return;
+    }
+
+    setCouponMsg({ type: "err", text: "अमान्य कूपन कोड" });
+    setAppliedDiscount(0);
+  };
+
+  const finalTotal = Math.max(0, total - appliedDiscount);
 
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
@@ -409,6 +469,44 @@ export default function CartSidebar({
                 </div>
                 {items.length > 0 && (
                   <div className="p-4 border-t border-border shrink-0">
+                    {/* Coupon input */}
+                    <div className="flex gap-2 mb-3">
+                      <div className="relative flex-1">
+                        <Tag className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                        <Input
+                          data-ocid="cart.input"
+                          placeholder="कूपन कोड दर्ज करें"
+                          value={couponCode}
+                          onChange={(e) => {
+                            setCouponCode(e.target.value.toUpperCase());
+                            setCouponMsg(null);
+                          }}
+                          onKeyDown={(e) => e.key === "Enter" && applyCoupon()}
+                          className="pl-8 font-hindi text-sm min-h-[38px]"
+                        />
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={applyCoupon}
+                        className="font-hindi shrink-0 min-h-[38px]"
+                        data-ocid="cart.secondary_button"
+                      >
+                        लगाएं
+                      </Button>
+                    </div>
+                    {couponMsg && (
+                      <p
+                        className={`text-xs font-hindi mb-2 ${couponMsg.type === "ok" ? "text-green-600" : "text-destructive"}`}
+                        data-ocid={
+                          couponMsg.type === "ok"
+                            ? "cart.success_state"
+                            : "cart.error_state"
+                        }
+                      >
+                        {couponMsg.type === "ok" ? "✅" : "❌"} {couponMsg.text}
+                      </p>
+                    )}
                     <div className="flex justify-between mb-1">
                       <span className="font-hindi text-muted-foreground">
                         उप-योग
@@ -417,6 +515,22 @@ export default function CartSidebar({
                         ₹{total}
                       </span>
                     </div>
+                    {appliedDiscount > 0 && (
+                      <div className="flex justify-between mb-1 text-green-600">
+                        <span className="font-hindi text-sm">छूट</span>
+                        <span className="font-hindi-serif font-bold">
+                          -₹{appliedDiscount}
+                        </span>
+                      </div>
+                    )}
+                    {appliedDiscount > 0 && (
+                      <div className="flex justify-between mb-1">
+                        <span className="font-hindi font-semibold">कुल</span>
+                        <span className="font-hindi-serif font-bold text-xl text-brand-gold">
+                          ₹{finalTotal}
+                        </span>
+                      </div>
+                    )}
                     <p className="font-hindi text-xs text-muted-foreground mb-3">
                       🚚 निःशुल्क डिलीवरी ₹999 से अधिक पर
                     </p>
@@ -685,7 +799,7 @@ export default function CartSidebar({
                   >
                     {isSubmitting
                       ? "ऑर्डर दिया जा रहा है..."
-                      : `ऑर्डर कनफर्म करें · ₹${total}`}
+                      : `ऑर्डर कनफर्म करें · ₹${finalTotal}`}
                   </Button>
                 </div>
               </>

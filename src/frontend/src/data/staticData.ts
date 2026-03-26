@@ -1,72 +1,82 @@
+const img1 =
+  "/assets/uploads/7e51ae83-9d5f-4057-a4e2-2fab4c0b3411-019d299b-3aa4-73c6-b6fa-948b5a43b4bf-1.png";
+const img2 =
+  "/assets/uploads/780a3755-601e-4cbf-82e3-24482715117f_1-019d299b-3b8a-70cc-8b15-47cba55c0422-2.png";
+const img3 =
+  "/assets/uploads/780a3755-601e-4cbf-82e3-24482715117f-019d299b-3b88-70a3-b01f-85f9d411868d-3.png";
+const img4 =
+  "/assets/uploads/emxn1y8qdgogdxbsb2fkeg55bgfilxn0dw50lxnncbpcc3bly2lhbc1lzmzly3qvb3v0chv0lzm3zjywnzywlti0ndctndc5zc1h-019d299b-3c4a-72c8-ac16-b39c3e8e07e4-4.png";
+const img5 =
+  "/assets/uploads/7679778b-944f-4829-a560-0483f99eb9d8-019d299b-3cd8-762b-82d2-71cc6c717763-5.png";
+
 export const staticProducts = [
   {
     id: BigInt(1),
-    name: "PR Ayurveda शिलाजीत कैप्सूल",
+    name: "PR Ayurveda शक्ति कैप्सूल",
     description:
-      "PR Ayurveda की हिमालयी शुद्ध शिलाजीत कैप्सूल — यौन शक्ति और ऊर्जा बढ़ाने में सर्वश्रेष्ठ",
+      "PR Ayurveda की शक्ति कैप्सूल — दैनिक ऊर्जा और शक्ति के लिए 100% आयुर्वेदिक फॉर्मूला",
     benefits: "यौन शक्ति वृद्धि, स्टैमिना, ऊर्जा",
     price: BigInt(2598),
-    ingredients: "शुद्ध शिलाजीत, अश्वगंधा, सफेद मूसली",
-    image: "/assets/generated/product-shilajit.dim_400x400.jpg",
+    ingredients: "अश्वगंधा, शिलाजीत, सफेद मूसली, कौंच बीज",
+    image: img2,
     rating: 5,
     reviews: 1250,
   },
   {
     id: BigInt(2),
-    name: "PR Ayurveda अश्वगंधा चूर्ण",
-    description: "PR Ayurveda का शुद्ध अश्वगंधा जड़ चूर्ण — तनाव मुक्ति और शक्ति वर्धक",
-    benefits: "तनाव मुक्ति, मानसिक स्वास्थ्य, शक्ति वर्धक",
-    price: BigInt(1198),
-    ingredients: "शुद्ध अश्वगंधा जड़",
-    image: "/assets/generated/product-ashwagandha.dim_400x400.jpg",
+    name: "PR Ayurveda पावर ऑयल",
+    description: "PR Ayurveda का आयुर्वेदिक पावर ऑयल — बाहरी देखभाल के लिए 100ml",
+    benefits: "बाहरी शक्ति, मालिश, आत्मविश्वास",
+    price: BigInt(1998),
+    ingredients: "हर्बल तेल, अश्वगंधा, सफेद मूसली",
+    image: img4,
     rating: 5,
     reviews: 980,
   },
   {
     id: BigInt(3),
-    name: "PR Ayurveda सफेद मूसली",
-    description:
-      "PR Ayurveda की प्राकृतिक सफेद मूसली — पुरुषों की यौन समस्याओं के लिए रामबाण",
-    benefits: "यौन शक्ति, स्टैमिना, वीर्य वर्धक",
-    price: BigInt(1998),
-    ingredients: "शुद्ध सफेद मूसली",
-    image: "/assets/generated/product-safedmusli.dim_400x400.jpg",
-    rating: 4,
+    name: "PR Ayurveda शक्ति + पावर ऑयल कॉम्बो",
+    description: "PR Ayurveda का बेस्ट कॉम्बो पैक — शक्ति कैप्सूल + पावर ऑयल एक साथ",
+    benefits: "संपूर्ण यौन स्वास्थ्य, स्टैमिना, ऊर्जा",
+    price: BigInt(3998),
+    ingredients: "शक्ति कैप्सूल + पावर ऑयल",
+    image: img1,
+    rating: 5,
     reviews: 750,
   },
   {
     id: BigInt(4),
-    name: "PR Ayurveda कौंच बीज चूर्ण",
-    description: "PR Ayurveda का शुद्ध कौंच बीज चूर्ण — पुरुष यौन स्वास्थ्य के लिए उत्तम",
-    benefits: "यौन शक्ति, हार्मोन बैलेंस, स्पर्म काउंट",
+    name: "PR Ayurveda अश्वगंधा कैप्सूल",
+    description: "PR Ayurveda का शुद्ध अश्वगंधा — तनाव मुक्ति और शक्ति वर्धक",
+    benefits: "तनाव मुक्ति, मानसिक स्वास्थ्य, शक्ति",
     price: BigInt(1598),
-    ingredients: "शुद्ध कौंच बीज",
-    image: "/assets/generated/product-kaunchbeej.dim_400x400.jpg",
+    ingredients: "शुद्ध अश्वगंधा जड़",
+    image: img3,
     rating: 4,
     reviews: 620,
   },
   {
     id: BigInt(5),
-    name: "PR Ayurveda शतावरी कैप्सूल",
-    description: "PR Ayurveda की शतावरी कैप्सूल — हार्मोनल बैलेंस और ऊर्जा के लिए",
-    benefits: "हार्मोन बैलेंस, ऊर्जा, पोषण",
-    price: BigInt(1398),
-    ingredients: "शुद्ध शतावरी अर्क",
-    image: "/assets/generated/product-shatavari.dim_400x400.jpg",
-    rating: 4,
-    reviews: 540,
+    name: "PR Ayurveda शिलाजीत कैप्सूल",
+    description: "PR Ayurveda की हिमालयी शुद्ध शिलाजीत — यौन शक्ति और ऊर्जा के लिए",
+    benefits: "यौन शक्ति, स्टैमिना, हार्मोन बैलेंस",
+    price: BigInt(2998),
+    ingredients: "शुद्ध शिलाजीत, अश्वगंधा",
+    image: img2,
+    rating: 5,
+    reviews: 1800,
   },
   {
     id: BigInt(6),
-    name: "PR Ayurveda विदारीकंद चूर्ण",
+    name: "PR Ayurveda सफेद मूसली",
     description:
-      "PR Ayurveda का शुद्ध विदारीकंद चूर्ण — यौन कमजोरी दूर करने में प्रभावशाली",
-    benefits: "यौन कमजोरी, शक्ति, वीर्य वर्धक",
-    price: BigInt(998),
-    ingredients: "शुद्ध विदारीकंद",
-    image: "/assets/generated/product-vidarikand.dim_400x400.jpg",
+      "PR Ayurveda की प्राकृतिक सफेद मूसली — पुरुषों की यौन समस्याओं के लिए रामबाण",
+    benefits: "यौन शक्ति, वीर्य वर्धक, स्टैमिना",
+    price: BigInt(1398),
+    ingredients: "शुद्ध सफेद मूसली",
+    image: img4,
     rating: 4,
-    reviews: 410,
+    reviews: 540,
   },
   {
     id: BigInt(7),
@@ -77,19 +87,19 @@ export const staticProducts = [
     price: BigInt(2998),
     ingredients:
       "शिलाजीत, अश्वगंधा, सफेद मूसली, कौंच बीज, शतावरी, गोखरू, अकरकरा, जायफल",
-    image: "/assets/generated/product-purush-shakti.dim_400x400.jpg",
+    image: img5,
     rating: 5,
-    reviews: 1800,
+    reviews: 1450,
   },
   {
     id: BigInt(8),
     name: "PR Ayurveda गोखरू एक्सट्रैक्ट",
     description:
-      "PR Ayurveda का शुद्ध गोखरू एक्सट्रैक्ट — टेस्टोस्टेरोन और किडनी स्वास्थ्य के लिए",
-    benefits: "टेस्टोस्टेरोन बूस्ट, किडनी, यौन शक्ति",
+      "PR Ayurveda का शुद्ध गोखरू एक्सट्रैक्ट — टेस्टोस्टेरोन और यौन शक्ति के लिए",
+    benefits: "टेस्टोस्टेरोन बूस्ट, यौन शक्ति, ऊर्जा",
     price: BigInt(1798),
     ingredients: "शुद्ध गोखरू अर्क",
-    image: "/assets/generated/product-gokhru.dim_400x400.jpg",
+    image: img3,
     rating: 4,
     reviews: 390,
   },
@@ -99,28 +109,28 @@ export const staticTestimonials = [
   {
     name: "राजेश कुमार",
     reviewText:
-      "PR Ayurveda शिलाजीत कैप्सूल ने मेरी जिंदगी बदल दी। 3 महीने में जबरदस्त फर्क पड़ा। पूरी तरह प्राकृतिक और कोई साइड इफेक्ट नहीं।",
+      "PR Ayurveda शक्ति कैप्सूल ने मेरी जिंदगी बदल दी। 3 महीने में जबरदस्त फर्क पड़ा। पूरी तरह प्राकृतिक और कोई साइड इफेक्ट नहीं।",
     rating: BigInt(5),
     location: "दिल्ली",
   },
   {
     name: "सुरेश शर्मा",
     reviewText:
-      "PR Ayurveda अश्वगंधा चूर्ण लेने के बाद तनाव काफी कम हुआ और ऊर्जा में बहुत सुधार आया। PR Ayurveda का बहुत बहुत धन्यवाद।",
+      "PR Ayurveda पावर ऑयल लेने के बाद बहुत फर्क पड़ा। PR Ayurveda का बहुत बहुत धन्यवाद।",
     rating: BigInt(5),
     location: "मुंबई",
   },
   {
     name: "अमित पटेल",
     reviewText:
-      "PR Ayurveda सफेद मूसली का असर पहले महीने से ही दिखने लगा। डिलीवरी भी बहुत जल्दी हुई। 100% संतुष्ट हूँ।",
+      "PR Ayurveda शक्ति कैप्सूल का असर पहले महीने से ही दिखने लगा। डिलीवरी भी बहुत जल्दी हुई। 100% संतुष्ट हूँ।",
     rating: BigInt(4),
     location: "अहमदाबाद",
   },
   {
     name: "विकास सिंह",
     reviewText:
-      "PR Ayurveda के सभी उत्पाद बहुत उच्च गुणवत्ता के हैं। मैंने PR Ayurveda पुरुष शक्ति टैबलेट लिया और परिणाम अद्भुत रहे।",
+      "PR Ayurveda के सभी उत्पाद बहुत उच्च गुणवत्ता के हैं। मैंने PR Ayurveda कॉम्बो पैक लिया और परिणाम अद्भुत रहे।",
     rating: BigInt(5),
     location: "लखनऊ",
   },

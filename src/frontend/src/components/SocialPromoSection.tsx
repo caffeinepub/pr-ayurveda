@@ -2,7 +2,8 @@ import { motion } from "motion/react";
 
 export default function SocialPromoSection() {
   const siteUrl = window.location.href;
-  const siteMsg = "PR Ayurveda - असली आयुर्वेदिक दवाएं, घर बैठे मंगाएं! 🌿";
+  const siteMsg =
+    "UrmiWellness - प्रमाणित दवाइयां और स्वास्थ्य उत्पाद, घर बैठे मंगाएं! 🏥";
 
   const handleWhatsAppShare = () => {
     window.open(
@@ -23,7 +24,7 @@ export default function SocialPromoSection() {
   };
 
   return (
-    <section className="py-14 bg-gradient-to-br from-green-50 to-amber-50 border-t border-green-100">
+    <section className="py-14 bg-gradient-to-br from-blue-50 to-sky-50 border-t border-blue-100">
       <div className="max-w-3xl mx-auto px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -31,15 +32,14 @@ export default function SocialPromoSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="font-hindi-serif font-bold text-2xl sm:text-3xl text-brand-green mb-2">
-            🌿 हमें सोशल मीडिया पर फॉलो करें
+          <h2 className="font-hindi-serif font-bold text-2xl sm:text-3xl text-brand-blue mb-2">
+            🏥 हमें सोशल मीडिया पर फॉलो करें
           </h2>
           <p className="font-hindi text-muted-foreground mb-8 text-sm">
-            ताज़ा ऑफर, नई दवाएं और आयुर्वेदिक टिप्स के लिए जुड़ें
+            ताज़ा ऑफर, नई दवाएं और स्वास्थ्य टिप्स के लिए जुड़ें
           </p>
 
           <div className="flex flex-wrap justify-center gap-4">
-            {/* Facebook */}
             <button
               type="button"
               onClick={handleFacebookShare}
@@ -59,7 +59,6 @@ export default function SocialPromoSection() {
               Facebook पर शेयर करें
             </button>
 
-            {/* WhatsApp Share */}
             <button
               type="button"
               onClick={handleWhatsAppShare}
@@ -79,7 +78,6 @@ export default function SocialPromoSection() {
               अभी शेयर करें
             </button>
 
-            {/* Instagram */}
             <button
               type="button"
               onClick={handleInstagramFollow}
@@ -104,7 +102,7 @@ export default function SocialPromoSection() {
           </div>
 
           <p className="font-hindi text-xs text-muted-foreground mt-6">
-            📣 अपने दोस्तों को भी बताएं — उन्हें भी मिलेगा असली आयुर्वेदिक इलाज
+            📣 अपने दोस्तों को भी बताएं — उन्हें भी मिलेंगी किफायती और प्रमाणित दवाइयां
           </p>
         </motion.div>
       </div>

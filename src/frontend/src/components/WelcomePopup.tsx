@@ -54,28 +54,28 @@ export default function WelcomePopup() {
             exit={{ scale: 0.8, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 22 }}
           >
-            <div className="bg-gradient-to-br from-brand-green to-brand-green-light px-6 py-5 text-center">
+            <div className="bg-gradient-to-br from-brand-blue-dark to-brand-blue px-6 py-5 text-center">
               <p className="text-3xl mb-1">🎉</p>
               <h2 className="font-hindi font-bold text-white text-xl leading-snug">
-                स्वागत ऑफर!
+                UrmiWellness में स्वागत!
               </h2>
             </div>
             <div className="px-6 py-5 text-center">
-              <p className="font-hindi font-bold text-brand-green text-lg mb-1">
+              <p className="font-hindi font-bold text-brand-blue text-lg mb-1">
                 पहले ऑर्डर पर पाएं ₹100 की छूट!
               </p>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 mb-3 inline-block">
-                <span className="font-hindi font-bold text-amber-700 text-base tracking-widest">
+              <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2 mb-3 inline-block">
+                <span className="font-hindi font-bold text-orange-700 text-base tracking-widest">
                   कोड: PRAYUR100
                 </span>
               </div>
               <p className="font-hindi text-sm text-muted-foreground mb-5">
-                आज ही ऑर्डर करें और प्राकृतिक आयुर्वेद का लाभ उठाएं
+                आज ही ऑर्डर करें और बेहतर स्वास्थ्य की शुरुआत करें
               </p>
               <button
                 type="button"
                 onClick={handleShop}
-                className="w-full bg-brand-green hover:bg-brand-green-light text-white font-hindi font-bold py-3 rounded-xl text-base transition-colors mb-3"
+                className="w-full bg-brand-blue hover:bg-brand-blue-light text-white font-hindi font-bold py-3 rounded-xl text-base transition-colors mb-3"
                 data-ocid="welcome.primary_button"
               >
                 अभी खरीदें 🛒

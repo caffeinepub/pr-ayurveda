@@ -17,8 +17,9 @@ export default {
     extend: {
       fontFamily: {
         hindi: ["'Noto Sans Devanagari'", "sans-serif"],
-        "hindi-serif": ["'Noto Serif Devanagari'", "'Playfair Display'", "serif"],
-        "playfair": ["'Playfair Display'", "serif"],
+        "hindi-serif": ["'Noto Serif Devanagari'", "'Plus Jakarta Sans'", "sans-serif"],
+        "playfair": ["'Plus Jakarta Sans'", "sans-serif"],
+        "jakarta": ["'Plus Jakarta Sans'", "sans-serif"],
       },
       colors: {
         border: "oklch(var(--border))",
@@ -71,18 +72,30 @@ export default {
           border: "oklch(var(--sidebar-border))",
           ring: "oklch(var(--sidebar-ring))",
         },
+        // Brand blue tokens (replace old green)
         "brand-green": {
-          DEFAULT: "oklch(0.25 0.07 152)",
-          dark: "oklch(0.22 0.065 152)",
-          light: "oklch(0.35 0.07 152)",
+          DEFAULT: "oklch(0.32 0.14 255)",
+          dark: "oklch(0.22 0.1 255)",
+          light: "oklch(0.45 0.14 255)",
         },
+        // Brand blue (alias)
+        "brand-blue": {
+          DEFAULT: "oklch(0.32 0.14 255)",
+          dark: "oklch(0.22 0.1 255)",
+          light: "oklch(0.45 0.14 255)",
+        },
+        // Brand orange (replace old gold)
         "brand-gold": {
-          DEFAULT: "oklch(0.68 0.11 75)",
-          light: "oklch(0.78 0.09 75)",
+          DEFAULT: "oklch(0.65 0.16 45)",
+          light: "oklch(0.75 0.14 45)",
+        },
+        "brand-orange": {
+          DEFAULT: "oklch(0.65 0.16 45)",
+          light: "oklch(0.75 0.14 45)",
         },
         "brand-cream": {
-          DEFAULT: "oklch(0.961 0.018 80)",
-          dark: "oklch(0.945 0.022 78)",
+          DEFAULT: "oklch(0.99 0.004 240)",
+          dark: "oklch(0.94 0.015 240)",
         },
       },
       borderRadius: {
@@ -92,8 +105,8 @@ export default {
       },
       boxShadow: {
         xs: "0 1px 2px 0 rgba(0,0,0,0.05)",
-        card: "0 4px 20px rgba(31,63,52,0.08)",
-        "card-hover": "0 8px 30px rgba(31,63,52,0.15)",
+        card: "0 4px 20px rgba(30,58,138,0.08)",
+        "card-hover": "0 8px 30px rgba(30,58,138,0.15)",
       },
       keyframes: {
         "accordion-down": {

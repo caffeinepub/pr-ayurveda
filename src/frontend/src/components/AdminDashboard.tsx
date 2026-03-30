@@ -84,7 +84,7 @@ function LoginGate({
   return (
     <div
       className="min-h-screen flex items-center justify-center"
-      style={{ background: "oklch(0.14 0.04 152)" }}
+      style={{ background: "oklch(0.12 0.06 255)" }}
     >
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -94,36 +94,36 @@ function LoginGate({
       >
         <Card
           className="border-0 shadow-2xl"
-          style={{ background: "oklch(0.18 0.04 152)" }}
+          style={{ background: "oklch(0.16 0.07 255)" }}
         >
           <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-3">
               <div
                 className="w-14 h-14 rounded-2xl flex items-center justify-center"
-                style={{ background: "oklch(0.27 0.065 152)" }}
+                style={{ background: "oklch(0.32 0.14 255)" }}
               >
                 <Leaf
                   className="w-7 h-7"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
+                  style={{ color: "oklch(0.65 0.16 45)" }}
                 />
               </div>
             </div>
             <CardTitle
               className="text-2xl font-hindi-serif"
-              style={{ color: "oklch(0.96 0.01 80)" }}
+              style={{ color: "oklch(0.99 0.002 240)" }}
             >
               एडमिन लॉगिन
             </CardTitle>
             <p
               className="text-sm mt-1"
-              style={{ color: "oklch(0.65 0.03 152)" }}
+              style={{ color: "oklch(0.70 0.05 255)" }}
             >
-              PR Ayurveda प्रबंधन पैनल
+              UrmiWellness प्रबंधन पैनल
             </p>
           </CardHeader>
           <CardContent className="pt-4 space-y-4">
             <div className="space-y-1.5">
-              <Label style={{ color: "oklch(0.75 0.03 152)" }}>पासवर्ड</Label>
+              <Label style={{ color: "oklch(0.80 0.04 255)" }}>पासवर्ड</Label>
               <div className="relative">
                 <Input
                   data-ocid="admin.input"
@@ -137,15 +137,15 @@ function LoginGate({
                   placeholder="पासवर्ड दर्ज करें"
                   className="pr-10 font-hindi border-0"
                   style={{
-                    background: "oklch(0.22 0.045 152)",
-                    color: "oklch(0.96 0.01 80)",
+                    background: "oklch(0.20 0.08 255)",
+                    color: "oklch(0.99 0.002 240)",
                   }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
                   className="absolute right-3 top-1/2 -translate-y-1/2"
-                  style={{ color: "oklch(0.65 0.03 152)" }}
+                  style={{ color: "oklch(0.70 0.05 255)" }}
                 >
                   {showPw ? (
                     <EyeOff className="w-4 h-4" />
@@ -168,8 +168,8 @@ function LoginGate({
               data-ocid="admin.submit_button"
               className="w-full font-hindi font-semibold border-0"
               style={{
-                background: "oklch(0.27 0.065 152)",
-                color: "oklch(0.96 0.01 80)",
+                background: "oklch(0.32 0.14 255)",
+                color: "oklch(0.99 0.002 240)",
               }}
               onClick={submit}
             >
@@ -179,7 +179,7 @@ function LoginGate({
               <button
                 type="button"
                 className="text-sm hover:underline"
-                style={{ color: "oklch(0.65 0.03 152)" }}
+                style={{ color: "oklch(0.70 0.05 255)" }}
                 onClick={onBack}
               >
                 ← मुख्य साइट पर जाएं
@@ -254,16 +254,16 @@ function RevenueChart({ orders }: { orders: LocalOrder[] }) {
   return (
     <Card
       className="border-0 mb-6"
-      style={{ background: "oklch(0.18 0.04 152)" }}
+      style={{ background: "oklch(0.16 0.07 255)" }}
     >
       <CardHeader className="pb-3">
         <CardTitle
           className="text-sm font-hindi flex items-center gap-2"
-          style={{ color: "oklch(0.96 0.01 80)" }}
+          style={{ color: "oklch(0.99 0.002 240)" }}
         >
           <BarChart3
             className="w-4 h-4"
-            style={{ color: "oklch(0.68 0.11 75)" }}
+            style={{ color: "oklch(0.65 0.16 45)" }}
           />
           पिछले 6 महीनों का रेवेन्यू
         </CardTitle>
@@ -281,7 +281,7 @@ function RevenueChart({ orders }: { orders: LocalOrder[] }) {
               >
                 <span
                   className="text-xs font-hindi"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
+                  style={{ color: "oklch(0.65 0.16 45)" }}
                 >
                   {m.revenue > 0 ? `₹${(m.revenue / 1000).toFixed(1)}k` : ""}
                 </span>
@@ -298,8 +298,8 @@ function RevenueChart({ orders }: { orders: LocalOrder[] }) {
                     className="w-full rounded-t-md"
                     style={{
                       background: isCurrentMonth
-                        ? "oklch(0.68 0.11 75)"
-                        : "oklch(0.30 0.07 152)",
+                        ? "oklch(0.65 0.16 45)"
+                        : "oklch(0.32 0.14 255)",
                       minHeight: m.revenue > 0 ? "4px" : "2px",
                     }}
                   />
@@ -308,8 +308,8 @@ function RevenueChart({ orders }: { orders: LocalOrder[] }) {
                   className="text-xs font-hindi"
                   style={{
                     color: isCurrentMonth
-                      ? "oklch(0.68 0.11 75)"
-                      : "oklch(0.55 0.04 152)",
+                      ? "oklch(0.65 0.16 45)"
+                      : "oklch(0.60 0.06 255)",
                   }}
                 >
                   {m.label}
@@ -320,7 +320,7 @@ function RevenueChart({ orders }: { orders: LocalOrder[] }) {
         </div>
         <p
           className="text-xs font-hindi mt-2"
-          style={{ color: "oklch(0.45 0.03 152)" }}
+          style={{ color: "oklch(0.55 0.05 255)" }}
         >
           * Gold bar = चालू महीना
         </p>
@@ -369,17 +369,17 @@ function OrdersTab({
       <div data-ocid="orders.empty_state" className="text-center py-16">
         <ShoppingBag
           className="w-12 h-12 mx-auto mb-3"
-          style={{ color: "oklch(0.55 0.04 152)" }}
+          style={{ color: "oklch(0.60 0.06 255)" }}
         />
         <p
           className="font-hindi text-lg font-semibold mb-1"
-          style={{ color: "oklch(0.75 0.04 152)" }}
+          style={{ color: "oklch(0.78 0.05 255)" }}
         >
           कोई ऑर्डर नहीं मिला
         </p>
         <p
           className="font-hindi text-sm"
-          style={{ color: "oklch(0.55 0.04 152)" }}
+          style={{ color: "oklch(0.60 0.06 255)" }}
         >
           जब ग्राहक ऑर्डर करेंगे, वे यहाँ दिखाई देंगे
         </p>
@@ -402,8 +402,8 @@ function OrdersTab({
               transition={{ delay: idx * 0.03, duration: 0.25 }}
               className="rounded-xl border p-4"
               style={{
-                background: "oklch(0.18 0.04 152)",
-                borderColor: "oklch(0.28 0.05 152)",
+                background: "oklch(0.16 0.07 255)",
+                borderColor: "oklch(0.28 0.09 255)",
               }}
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -411,18 +411,18 @@ function OrdersTab({
                   <div className="flex items-center gap-2 mb-1">
                     <Package
                       className="w-4 h-4"
-                      style={{ color: "oklch(0.68 0.11 75)" }}
+                      style={{ color: "oklch(0.65 0.16 45)" }}
                     />
                     <span
                       className="font-semibold font-hindi"
-                      style={{ color: "oklch(0.96 0.01 80)" }}
+                      style={{ color: "oklch(0.99 0.002 240)" }}
                     >
                       ऑर्डर #{order.orderNo}
                     </span>
                   </div>
                   <div
                     className="flex items-center gap-1 text-sm"
-                    style={{ color: "oklch(0.65 0.03 152)" }}
+                    style={{ color: "oklch(0.70 0.05 255)" }}
                   >
                     <Clock className="w-3.5 h-3.5" />
                     <span>{order.date}</span>
@@ -457,9 +457,9 @@ function OrdersTab({
                     variant="outline"
                     className="text-xs font-hindi border"
                     style={{
-                      borderColor: "oklch(0.35 0.06 152)",
-                      color: "oklch(0.75 0.04 152)",
-                      background: "oklch(0.22 0.045 152)",
+                      borderColor: "oklch(0.38 0.1 255)",
+                      color: "oklch(0.78 0.05 255)",
+                      background: "oklch(0.20 0.08 255)",
                     }}
                     onClick={() => cycleStatus(order.orderNo, status)}
                   >
@@ -486,57 +486,57 @@ function OrdersTab({
               <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div
                   className="flex items-center gap-2 text-sm"
-                  style={{ color: "oklch(0.75 0.04 152)" }}
+                  style={{ color: "oklch(0.78 0.05 255)" }}
                 >
                   <Users
                     className="w-3.5 h-3.5 shrink-0"
-                    style={{ color: "oklch(0.68 0.11 75)" }}
+                    style={{ color: "oklch(0.65 0.16 45)" }}
                   />
                   <span
                     className="font-hindi font-semibold"
-                    style={{ color: "oklch(0.96 0.01 80)" }}
+                    style={{ color: "oklch(0.99 0.002 240)" }}
                   >
                     {order.name}
                   </span>
                 </div>
                 <div
                   className="flex items-center gap-2 text-sm"
-                  style={{ color: "oklch(0.75 0.04 152)" }}
+                  style={{ color: "oklch(0.78 0.05 255)" }}
                 >
                   <Phone
                     className="w-3.5 h-3.5 shrink-0"
-                    style={{ color: "oklch(0.68 0.11 75)" }}
+                    style={{ color: "oklch(0.65 0.16 45)" }}
                   />
                   <span className="font-hindi">{order.phone}</span>
                 </div>
                 <div
                   className="flex items-start gap-2 text-sm sm:col-span-2"
-                  style={{ color: "oklch(0.75 0.04 152)" }}
+                  style={{ color: "oklch(0.78 0.05 255)" }}
                 >
                   <MapPin
                     className="w-3.5 h-3.5 shrink-0 mt-0.5"
-                    style={{ color: "oklch(0.68 0.11 75)" }}
+                    style={{ color: "oklch(0.65 0.16 45)" }}
                   />
                   <span className="font-hindi">{order.address}</span>
                 </div>
                 <div
                   className="flex items-center gap-2 text-sm"
-                  style={{ color: "oklch(0.75 0.04 152)" }}
+                  style={{ color: "oklch(0.78 0.05 255)" }}
                 >
                   <CreditCard
                     className="w-3.5 h-3.5 shrink-0"
-                    style={{ color: "oklch(0.68 0.11 75)" }}
+                    style={{ color: "oklch(0.65 0.16 45)" }}
                   />
                   <span className="font-hindi">{order.payment}</span>
                 </div>
                 <div
-                  style={{ color: "oklch(0.75 0.04 152)" }}
+                  style={{ color: "oklch(0.78 0.05 255)" }}
                   className="flex items-center gap-2 text-sm"
                 >
                   <span className="font-hindi">कुल: </span>
                   <span
                     className="font-semibold"
-                    style={{ color: "oklch(0.68 0.11 75)" }}
+                    style={{ color: "oklch(0.65 0.16 45)" }}
                   >
                     ₹{order.total.toLocaleString("hi-IN")}
                   </span>
@@ -550,8 +550,8 @@ function OrdersTab({
                       key={`${item.name}-${i}`}
                       className="text-xs px-2 py-0.5 rounded-md font-hindi"
                       style={{
-                        background: "oklch(0.23 0.055 152)",
-                        color: "oklch(0.75 0.04 152)",
+                        background: "oklch(0.20 0.08 255)",
+                        color: "oklch(0.78 0.05 255)",
                       }}
                     >
                       {item.name} × {item.qty}
@@ -619,17 +619,17 @@ function ConsultationsTab() {
       <div data-ocid="consultations.empty_state" className="text-center py-16">
         <Users
           className="w-12 h-12 mx-auto mb-3"
-          style={{ color: "oklch(0.55 0.04 152)" }}
+          style={{ color: "oklch(0.60 0.06 255)" }}
         />
         <p
           className="font-hindi text-lg font-semibold mb-1"
-          style={{ color: "oklch(0.75 0.04 152)" }}
+          style={{ color: "oklch(0.78 0.05 255)" }}
         >
           कोई परामर्श अनुरोध नहीं मिला
         </p>
         <p
           className="font-hindi text-sm"
-          style={{ color: "oklch(0.55 0.04 152)" }}
+          style={{ color: "oklch(0.60 0.06 255)" }}
         >
           जब ग्राहक परामर्श फॉर्म भरेंगे, वे यहाँ दिखाई देंगे
         </p>
@@ -648,8 +648,8 @@ function ConsultationsTab() {
           transition={{ delay: idx * 0.05 }}
           className="rounded-xl border p-4"
           style={{
-            background: "oklch(0.18 0.04 152)",
-            borderColor: "oklch(0.28 0.05 152)",
+            background: "oklch(0.16 0.07 255)",
+            borderColor: "oklch(0.28 0.09 255)",
           }}
         >
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -657,7 +657,7 @@ function ConsultationsTab() {
               <div className="flex items-center gap-2 mb-0.5">
                 <span
                   className="font-semibold font-hindi"
-                  style={{ color: "oklch(0.96 0.01 80)" }}
+                  style={{ color: "oklch(0.99 0.002 240)" }}
                 >
                   {c.name}
                 </span>
@@ -677,7 +677,7 @@ function ConsultationsTab() {
               </div>
               <div
                 className="flex items-center gap-1 text-sm"
-                style={{ color: "oklch(0.65 0.03 152)" }}
+                style={{ color: "oklch(0.70 0.05 255)" }}
               >
                 <Phone className="w-3.5 h-3.5" />
                 <span>{c.phone}</span>
@@ -686,7 +686,7 @@ function ConsultationsTab() {
             <div className="flex items-center gap-2">
               <div
                 className="text-xs"
-                style={{ color: "oklch(0.55 0.04 152)" }}
+                style={{ color: "oklch(0.60 0.06 255)" }}
               >
                 {c.date}
               </div>
@@ -703,7 +703,7 @@ function ConsultationsTab() {
           </div>
           <p
             className="mt-2 text-sm font-hindi leading-relaxed"
-            style={{ color: "oklch(0.75 0.04 152)" }}
+            style={{ color: "oklch(0.78 0.05 255)" }}
           >
             {c.message}
           </p>
@@ -797,8 +797,8 @@ function ProductsTab() {
           data-ocid="products.open_modal_button"
           className="font-hindi gap-2"
           style={{
-            background: "oklch(0.27 0.065 152)",
-            color: "oklch(0.96 0.01 80)",
+            background: "oklch(0.32 0.14 255)",
+            color: "oklch(0.99 0.002 240)",
           }}
           onClick={() => setShowAdd((v) => !v)}
         >
@@ -814,13 +814,13 @@ function ProductsTab() {
           animate={{ opacity: 1, y: 0 }}
           className="rounded-xl border p-4 space-y-3"
           style={{
-            background: "oklch(0.18 0.04 152)",
+            background: "oklch(0.16 0.07 255)",
             borderColor: "oklch(0.35 0.08 152)",
           }}
         >
           <h3
             className="font-semibold font-hindi"
-            style={{ color: "oklch(0.96 0.01 80)" }}
+            style={{ color: "oklch(0.99 0.002 240)" }}
           >
             नया प्रोडक्ट
           </h3>
@@ -828,7 +828,7 @@ function ProductsTab() {
             <div>
               <Label
                 className="font-hindi"
-                style={{ color: "oklch(0.75 0.04 152)" }}
+                style={{ color: "oklch(0.78 0.05 255)" }}
               >
                 नाम
               </Label>
@@ -839,15 +839,15 @@ function ProductsTab() {
                 placeholder="प्रोडक्ट का नाम"
                 className="font-hindi border-0 mt-1"
                 style={{
-                  background: "oklch(0.22 0.045 152)",
-                  color: "oklch(0.96 0.01 80)",
+                  background: "oklch(0.20 0.08 255)",
+                  color: "oklch(0.99 0.002 240)",
                 }}
               />
             </div>
             <div>
               <Label
                 className="font-hindi"
-                style={{ color: "oklch(0.75 0.04 152)" }}
+                style={{ color: "oklch(0.78 0.05 255)" }}
               >
                 कीमत (₹)
               </Label>
@@ -859,15 +859,15 @@ function ProductsTab() {
                 placeholder="कीमत"
                 className="font-hindi border-0 mt-1"
                 style={{
-                  background: "oklch(0.22 0.045 152)",
-                  color: "oklch(0.96 0.01 80)",
+                  background: "oklch(0.20 0.08 255)",
+                  color: "oklch(0.99 0.002 240)",
                 }}
               />
             </div>
             <div className="sm:col-span-2">
               <Label
                 className="font-hindi"
-                style={{ color: "oklch(0.75 0.04 152)" }}
+                style={{ color: "oklch(0.78 0.05 255)" }}
               >
                 विवरण
               </Label>
@@ -878,8 +878,8 @@ function ProductsTab() {
                 placeholder="संक्षिप्त विवरण"
                 className="font-hindi border-0 mt-1"
                 style={{
-                  background: "oklch(0.22 0.045 152)",
-                  color: "oklch(0.96 0.01 80)",
+                  background: "oklch(0.20 0.08 255)",
+                  color: "oklch(0.99 0.002 240)",
                 }}
               />
             </div>
@@ -889,7 +889,7 @@ function ProductsTab() {
               data-ocid="products.cancel_button"
               variant="ghost"
               className="font-hindi"
-              style={{ color: "oklch(0.65 0.03 152)" }}
+              style={{ color: "oklch(0.70 0.05 255)" }}
               onClick={() => setShowAdd(false)}
             >
               <X className="w-4 h-4 mr-1" /> रद्द करें
@@ -898,8 +898,8 @@ function ProductsTab() {
               data-ocid="products.save_button"
               className="font-hindi"
               style={{
-                background: "oklch(0.27 0.065 152)",
-                color: "oklch(0.96 0.01 80)",
+                background: "oklch(0.32 0.14 255)",
+                color: "oklch(0.99 0.002 240)",
               }}
               onClick={addProduct}
             >
@@ -919,8 +919,8 @@ function ProductsTab() {
             transition={{ delay: idx * 0.04 }}
             className="rounded-xl border p-4"
             style={{
-              background: "oklch(0.18 0.04 152)",
-              borderColor: "oklch(0.28 0.05 152)",
+              background: "oklch(0.16 0.07 255)",
+              borderColor: "oklch(0.28 0.09 255)",
             }}
           >
             <div className="flex items-start justify-between gap-2 mb-3">
@@ -932,14 +932,14 @@ function ProductsTab() {
                     onChange={(e) => setEditName(e.target.value)}
                     className="font-hindi text-sm border-0 px-2 h-8"
                     style={{
-                      background: "oklch(0.22 0.045 152)",
-                      color: "oklch(0.96 0.01 80)",
+                      background: "oklch(0.20 0.08 255)",
+                      color: "oklch(0.99 0.002 240)",
                     }}
                   />
                 ) : (
                   <p
                     className="font-semibold font-hindi text-sm truncate"
-                    style={{ color: "oklch(0.96 0.01 80)" }}
+                    style={{ color: "oklch(0.99 0.002 240)" }}
                   >
                     {p.name}
                   </p>
@@ -951,8 +951,8 @@ function ProductsTab() {
                   size="sm"
                   className="shrink-0 h-7 text-xs font-hindi"
                   style={{
-                    background: "oklch(0.27 0.065 152)",
-                    color: "oklch(0.96 0.01 80)",
+                    background: "oklch(0.32 0.14 255)",
+                    color: "oklch(0.99 0.002 240)",
                   }}
                   onClick={() => saveEdit(p.id)}
                 >
@@ -986,7 +986,7 @@ function ProductsTab() {
             <div className="flex items-center gap-2">
               {editing === p.id ? (
                 <div className="flex items-center gap-1">
-                  <span style={{ color: "oklch(0.68 0.11 75)" }}>₹</span>
+                  <span style={{ color: "oklch(0.65 0.16 45)" }}>₹</span>
                   <Input
                     data-ocid="products.input"
                     type="number"
@@ -994,15 +994,15 @@ function ProductsTab() {
                     onChange={(e) => setEditPrice(e.target.value)}
                     className="font-hindi text-sm border-0 px-2 h-8 w-28"
                     style={{
-                      background: "oklch(0.22 0.045 152)",
-                      color: "oklch(0.96 0.01 80)",
+                      background: "oklch(0.20 0.08 255)",
+                      color: "oklch(0.99 0.002 240)",
                     }}
                   />
                 </div>
               ) : (
                 <span
                   className="font-bold"
-                  style={{ color: "oklch(0.68 0.11 75)" }}
+                  style={{ color: "oklch(0.65 0.16 45)" }}
                 >
                   ₹{Number(p.price).toLocaleString("hi-IN")}
                 </span>
@@ -1042,24 +1042,24 @@ function SettingsTab() {
   };
 
   const inputStyle = {
-    background: "oklch(0.22 0.045 152)",
-    color: "oklch(0.96 0.01 80)",
+    background: "oklch(0.20 0.08 255)",
+    color: "oklch(0.99 0.002 240)",
     borderColor: "oklch(0.30 0.06 152)",
   };
 
-  const labelStyle = { color: "oklch(0.75 0.04 152)" };
+  const labelStyle = { color: "oklch(0.78 0.05 255)" };
 
   return (
     <div className="space-y-4 max-w-xl">
-      <Card className="border-0" style={{ background: "oklch(0.18 0.04 152)" }}>
+      <Card className="border-0" style={{ background: "oklch(0.16 0.07 255)" }}>
         <CardHeader className="pb-3">
           <CardTitle
             className="text-sm font-hindi"
-            style={{ color: "oklch(0.96 0.01 80)" }}
+            style={{ color: "oklch(0.99 0.002 240)" }}
           >
             <Settings
               className="inline w-4 h-4 mr-2"
-              style={{ color: "oklch(0.68 0.11 75)" }}
+              style={{ color: "oklch(0.65 0.16 45)" }}
             />
             साइट सेटिंग्स
           </CardTitle>
@@ -1088,7 +1088,7 @@ function SettingsTab() {
               </Label>
               <p
                 className="text-xs font-hindi mt-0.5"
-                style={{ color: "oklch(0.55 0.04 152)" }}
+                style={{ color: "oklch(0.60 0.06 255)" }}
               >
                 चालू रहने पर टाइमर दिखेगा
               </p>
@@ -1127,7 +1127,7 @@ function SettingsTab() {
             />
             <p
               className="text-xs font-hindi mt-1"
-              style={{ color: "oklch(0.55 0.04 152)" }}
+              style={{ color: "oklch(0.60 0.06 255)" }}
             >
               उदाहरण: 919217127566 (91 + 10 अंक)
             </p>
@@ -1169,8 +1169,8 @@ function SettingsTab() {
             data-ocid="settings.save_button"
             className="w-full font-hindi"
             style={{
-              background: "oklch(0.27 0.065 152)",
-              color: "oklch(0.96 0.01 80)",
+              background: "oklch(0.32 0.14 255)",
+              color: "oklch(0.99 0.002 240)",
             }}
             onClick={handleSave}
           >
@@ -1284,15 +1284,15 @@ function PromotionsTab() {
       saveBanners(banners.filter((b) => b.id !== id));
   };
 
-  const cardStyle = { background: "oklch(0.18 0.04 152)" };
+  const cardStyle = { background: "oklch(0.16 0.07 255)" };
   const inputStyle = {
-    background: "oklch(0.22 0.045 152)",
-    color: "oklch(0.96 0.01 80)",
+    background: "oklch(0.20 0.08 255)",
+    color: "oklch(0.99 0.002 240)",
     borderColor: "oklch(0.30 0.06 152)",
   };
-  const labelStyle = { color: "oklch(0.75 0.04 152)" };
-  const textStyle = { color: "oklch(0.96 0.01 80)" };
-  const mutedStyle = { color: "oklch(0.55 0.04 152)" };
+  const labelStyle = { color: "oklch(0.78 0.05 255)" };
+  const textStyle = { color: "oklch(0.99 0.002 240)" };
+  const mutedStyle = { color: "oklch(0.60 0.06 255)" };
 
   const colorOptions = [
     { value: "bg-red-600", label: "लाल" },
@@ -1311,7 +1311,7 @@ function PromotionsTab() {
             className="text-sm font-hindi flex items-center gap-2"
             style={textStyle}
           >
-            <Tag className="w-4 h-4" style={{ color: "oklch(0.68 0.11 75)" }} />
+            <Tag className="w-4 h-4" style={{ color: "oklch(0.65 0.16 45)" }} />
             कूपन कोड
           </CardTitle>
         </CardHeader>
@@ -1390,8 +1390,8 @@ function PromotionsTab() {
             onClick={addCoupon}
             className="font-hindi font-semibold border-0"
             style={{
-              background: "oklch(0.27 0.065 152)",
-              color: "oklch(0.96 0.01 80)",
+              background: "oklch(0.32 0.14 255)",
+              color: "oklch(0.99 0.002 240)",
             }}
           >
             <Plus className="w-4 h-4 mr-1" />
@@ -1428,7 +1428,7 @@ function PromotionsTab() {
                     >
                       <td
                         className="py-2 font-mono font-bold"
-                        style={{ color: "oklch(0.68 0.11 75)" }}
+                        style={{ color: "oklch(0.65 0.16 45)" }}
                       >
                         {c.code}
                       </td>
@@ -1495,7 +1495,7 @@ function PromotionsTab() {
           >
             <Megaphone
               className="w-4 h-4"
-              style={{ color: "oklch(0.68 0.11 75)" }}
+              style={{ color: "oklch(0.65 0.16 45)" }}
             />
             प्रोमो बैनर
           </CardTitle>
@@ -1574,8 +1574,8 @@ function PromotionsTab() {
             onClick={addBanner}
             className="font-hindi font-semibold border-0"
             style={{
-              background: "oklch(0.27 0.065 152)",
-              color: "oklch(0.96 0.01 80)",
+              background: "oklch(0.32 0.14 255)",
+              color: "oklch(0.99 0.002 240)",
             }}
           >
             <Plus className="w-4 h-4 mr-1" />
@@ -1589,7 +1589,7 @@ function PromotionsTab() {
                 <div
                   key={b.id}
                   className="flex items-center gap-3 p-3 rounded-lg"
-                  style={{ background: "oklch(0.22 0.045 152)" }}
+                  style={{ background: "oklch(0.20 0.08 255)" }}
                 >
                   <div
                     className="w-3 h-8 rounded shrink-0"
@@ -1755,7 +1755,7 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
   return (
     <div
       className="min-h-screen font-hindi"
-      style={{ background: "oklch(0.14 0.04 152)" }}
+      style={{ background: "oklch(0.12 0.06 255)" }}
     >
       {/* Top Bar */}
       <header
@@ -1768,21 +1768,21 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
         <div className="flex items-center gap-3">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: "oklch(0.27 0.065 152)" }}
+            style={{ background: "oklch(0.32 0.14 255)" }}
           >
             <Leaf
               className="w-5 h-5"
-              style={{ color: "oklch(0.68 0.11 75)" }}
+              style={{ color: "oklch(0.65 0.16 45)" }}
             />
           </div>
           <div>
             <h1
               className="text-base font-bold font-hindi-serif"
-              style={{ color: "oklch(0.96 0.01 80)" }}
+              style={{ color: "oklch(0.99 0.002 240)" }}
             >
-              PR Ayurveda
+              UrmiWellness
             </h1>
-            <p className="text-xs" style={{ color: "oklch(0.55 0.04 152)" }}>
+            <p className="text-xs" style={{ color: "oklch(0.60 0.06 255)" }}>
               एडमिन पैनल
             </p>
           </div>
@@ -1802,7 +1802,7 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
             size="sm"
             variant="ghost"
             className="text-xs font-hindi flex items-center gap-1"
-            style={{ color: "oklch(0.68 0.11 75)" }}
+            style={{ color: "oklch(0.65 0.16 45)" }}
             onClick={loadData}
             title="नए ऑर्डर चेक करें"
           >
@@ -1831,7 +1831,7 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
               icon: ShoppingBag,
               label: "ऑर्डर्स",
               value: String(orders.length),
-              color: "oklch(0.68 0.11 75)",
+              color: "oklch(0.65 0.16 45)",
             },
             {
               icon: Users,
@@ -1861,19 +1861,19 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
             <Card
               key={label}
               className="border-0"
-              style={{ background: "oklch(0.18 0.04 152)" }}
+              style={{ background: "oklch(0.16 0.07 255)" }}
             >
               <CardContent className="p-4 flex items-center gap-3">
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ background: "oklch(0.22 0.045 152)" }}
+                  style={{ background: "oklch(0.20 0.08 255)" }}
                 >
                   <Icon className="w-5 h-5" style={{ color }} />
                 </div>
                 <div className="min-w-0">
                   <p
                     className="text-base font-bold font-hindi truncate"
-                    style={{ color: "oklch(0.96 0.01 80)" }}
+                    style={{ color: "oklch(0.99 0.002 240)" }}
                   >
                     {value}
                   </p>
@@ -1896,7 +1896,7 @@ export default function AdminDashboard({ onExit }: AdminDashboardProps) {
           <TabsList
             data-ocid="admin.tab"
             className="w-full border-0 p-1 rounded-xl"
-            style={{ background: "oklch(0.18 0.04 152)" }}
+            style={{ background: "oklch(0.16 0.07 255)" }}
           >
             <TabsTrigger
               value="orders"

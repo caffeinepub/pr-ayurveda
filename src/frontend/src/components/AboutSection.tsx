@@ -1,22 +1,22 @@
 import { Award, CheckCircle, Leaf, Shield, Users } from "lucide-react";
 
 const stats = [
-  { value: "10,000+", label: "संतुष्ट ग्राहक" },
-  { value: "8+", label: "आयुर्वेदिक उत्पाद" },
-  { value: "100%", label: "प्राकृतिक सामग्री" },
+  { value: "1,00,000+", label: "संतुष्ट ग्राहक" },
+  { value: "500+", label: "दवाइयां उपलब्ध" },
+  { value: "100%", label: "प्रमाणित उत्पाद" },
   { value: "5 साल", label: "विश्वसनीय अनुभव" },
 ];
 
 const values = [
   {
     icon: Leaf,
-    title: "शुद्ध आयुर्वेद",
-    desc: "हम केवल शुद्ध जड़ी-बूटियों का उपयोग करते हैं। कोई रसायन नहीं, कोई मिलावट नहीं।",
+    title: "प्रमाणित दवाइयां",
+    desc: "हम केवल FSSAI और WHO-GMP प्रमाणित दवाइयां और उत्पाद बेचते हैं।",
   },
   {
     icon: Shield,
     title: "विश्वसनीय गुणवत्ता",
-    desc: "हर उत्पाद विशेषज्ञ वैद्यों द्वारा परीक्षित और अनुमोदित है।",
+    desc: "हर उत्पाद विशेषज्ञ डॉक्टरों द्वारा परीक्षित और अनुमोदित है।",
   },
   {
     icon: Users,
@@ -25,8 +25,8 @@ const values = [
   },
   {
     icon: Award,
-    title: "विशेषज्ञ वैद्य टीम",
-    desc: "हमारे अनुभवी वैद्य आपकी हर समस्या का सही समाधान देने के लिए सदैव तत्पर हैं।",
+    title: "विशेषज्ञ डॉक्टर टीम",
+    desc: "हमारे अनुभवी डॉक्टर आपकी हर समस्या का सही समाधान देने के लिए सदैव तत्पर हैं।",
   },
 ];
 
@@ -35,7 +35,7 @@ const certifications = [
     icon: "🏛️",
     title: "FSSAI प्रमाणित",
     license: "FSSAI लाइसेंस नं. 10024022000154",
-    desc: "भारत सरकार के खाद्य सुरक्षा एवं मानक प्राधिकरण द्वारा प्रमाणित। हमारे उत्पाद खाद्य गुणवत्ता के उच्चतम मानकों को पूरा करते हैं।",
+    desc: "भारत सरकार के खाद्य सुरक्षा एवं मानक प्राधिकरण द्वारा प्रमाणित।",
     color: "bg-blue-50 border-blue-200",
     iconBg: "bg-blue-100",
     labelColor: "text-blue-700",
@@ -44,47 +44,46 @@ const certifications = [
     icon: "🌍",
     title: "WHO-GMP प्रमाणित",
     license: "विश्व स्वास्थ्य संगठन अनुमोदित",
-    desc: "WHO के Good Manufacturing Practices के अनुसार निर्मित। अंतर्राष्ट्रीय उत्पादन गुणवत्ता मानकों का पालन।",
-    color: "bg-green-50 border-green-200",
-    iconBg: "bg-green-100",
-    labelColor: "text-green-700",
+    desc: "WHO के Good Manufacturing Practices के अनुसार निर्मित।",
+    color: "bg-sky-50 border-sky-200",
+    iconBg: "bg-sky-100",
+    labelColor: "text-sky-700",
   },
   {
     icon: "🏥",
-    title: "Ayush मंत्रालय अनुमोदित",
+    title: "Ayush मंत्रालय",
     license: "भारत सरकार — आयुष मंत्रालय",
-    desc: "भारत सरकार के आयुष मंत्रालय द्वारा मान्यता प्राप्त। पारंपरिक आयुर्वेदिक चिकित्सा के सर्वोच्च मानकों के अनुरूप।",
-    color: "bg-amber-50 border-amber-200",
-    iconBg: "bg-amber-100",
-    labelColor: "text-amber-700",
+    desc: "भारत सरकार के आयुष मंत्रालय द्वारा मान्यता प्राप्त।",
+    color: "bg-indigo-50 border-indigo-200",
+    iconBg: "bg-indigo-100",
+    labelColor: "text-indigo-700",
   },
   {
     icon: "✅",
-    title: "ISO 9001:2015 प्रमाणित",
+    title: "ISO 9001:2015",
     license: "अंतर्राष्ट्रीय मानक संगठन",
-    desc: "ISO 9001:2015 के अनुसार प्रमाणित गुणवत्ता प्रबंधन प्रणाली। हर उत्पाद कठोर गुणवत्ता परीक्षण से गुजरता है।",
-    color: "bg-purple-50 border-purple-200",
-    iconBg: "bg-purple-100",
-    labelColor: "text-purple-700",
+    desc: "ISO 9001:2015 के अनुसार प्रमाणित गुणवत्ता प्रबंधन प्रणाली।",
+    color: "bg-violet-50 border-violet-200",
+    iconBg: "bg-violet-100",
+    labelColor: "text-violet-700",
   },
 ];
 
 export default function AboutSection() {
   return (
-    <section id="about" className="py-20 bg-brand-green">
+    <section id="about" className="py-20 bg-brand-blue-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Heading */}
         <div className="text-center mb-14">
-          <p className="text-brand-gold font-hindi text-sm font-semibold uppercase tracking-widest mb-2">
+          <p className="text-brand-orange font-hindi text-sm font-semibold uppercase tracking-widest mb-2">
             हमारे बारे में
           </p>
           <h2 className="font-hindi-serif text-3xl md:text-4xl font-bold text-white mb-4">
-            PR Ayurveda क्या है?
+            UrmiWellness क्या है?
           </h2>
           <p className="text-white/80 font-hindi max-w-2xl mx-auto leading-relaxed">
-            PR Ayurveda दिल्ली की एक विश्वसनीय आयुर्वेदिक कंपनी है जो पुरुषों की यौन
-            स्वास्थ्य समस्याओं का समाधान शुद्ध आयुर्वेदिक जड़ी-बूटियों से करती है। हमारा लक्ष्य
-            हर भारतीय पुरुष को प्राकृतिक तरीके से स्वस्थ और आत्मविश्वासी बनाना है।
+            UrmiWellness दिल्ली का एक विश्वसनीय स्वास्थ्य मंच है जो आपको प्रमाणित
+            दवाइयां, विटामिन और आयुर्वेदिक उत्पाद किफायती दामों पर घर तक पहुंचाता है।
           </p>
         </div>
 
@@ -95,7 +94,7 @@ export default function AboutSection() {
               key={stat.label}
               className="text-center bg-white/10 rounded-xl p-6 border border-white/20"
             >
-              <p className="font-hindi-serif text-3xl font-bold text-brand-gold mb-1">
+              <p className="font-hindi-serif text-3xl font-bold text-brand-orange mb-1">
                 {stat.value}
               </p>
               <p className="font-hindi text-white/80 text-sm">{stat.label}</p>
@@ -110,16 +109,16 @@ export default function AboutSection() {
               हमारी कहानी
             </h3>
             <p className="font-hindi text-white/80 leading-relaxed mb-4">
-              PR Ayurveda की शुरुआत ओखला फेज 3, दिल्ली से हुई। हमारे संस्थापक ने देखा कि
-              बाजार में बहुत सी नकली दवाईयां हैं जो लोगों को नुकसान पहुंचा रही हैं।
+              UrmiWellness की शुरुआत ओखला फेज 3, दिल्ली से हुई। हमारे संस्थापकों ने देखा कि
+              आम लोगों को किफायती और प्रमाणित दवाइयां मिलना मुश्किल है।
             </p>
             <p className="font-hindi text-white/80 leading-relaxed mb-4">
-              इसीलिए हमने विशेषज्ञ वैद्यों के साथ मिलकर शुद्ध आयुर्वेदिक उत्पाद बनाने शुरू किए
-              जो सस्ते, सुरक्षित और उपयोगी हों। आज हमारे हजारों ग्राहक हम पर विश्वास करते
-              हैं।
+              इसीलिए हमने विशेषज्ञ डॉक्टरों के साथ मिलकर एक ऐसा मंच बनाया जहाँ सस्ती,
+              सुरक्षित और असरदार दवाइयां आसानी से मिल सकें। आज हमारे लाखों ग्राहक हम पर
+              विश्वास करते हैं।
             </p>
             <p className="font-hindi text-white/80 leading-relaxed">
-              हमारा वादा है — कोई समझौता नहीं, कोई नकल नहीं, केवल शुद्ध आयुर्वेद।
+              हमारा वादा है — कोई समझौता नहीं, केवल प्रमाणित गुणवत्ता।
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -128,8 +127,8 @@ export default function AboutSection() {
                 key={title}
                 className="bg-white/10 rounded-xl p-5 border border-white/20"
               >
-                <div className="w-10 h-10 bg-brand-gold/20 rounded-full flex items-center justify-center mb-3">
-                  <Icon className="w-5 h-5 text-brand-gold" />
+                <div className="w-10 h-10 bg-brand-orange/20 rounded-full flex items-center justify-center mb-3">
+                  <Icon className="w-5 h-5 text-brand-orange" />
                 </div>
                 <h4 className="font-hindi font-bold text-white text-sm mb-1">
                   {title}
@@ -145,11 +144,11 @@ export default function AboutSection() {
         {/* Certifications Section */}
         <div className="mb-16">
           <div className="text-center mb-8">
-            <p className="text-brand-gold font-hindi text-sm font-semibold uppercase tracking-widest mb-2">
+            <p className="text-brand-orange font-hindi text-sm font-semibold uppercase tracking-widest mb-2">
               प्रमाणपत्र एवं मान्यताएं
             </p>
             <h3 className="font-hindi-serif text-2xl font-bold text-white mb-3">
-              सरकारी मान्यता प्राप्त उत्पाद
+              सरकारी मान्यता प्राप्त मंच
             </h3>
             <p className="font-hindi text-white/80 text-sm max-w-xl mx-auto">
               हमारे सभी उत्पाद FSSAI और WHO-GMP मानकों के अनुसार निर्मित हैं
@@ -162,18 +161,14 @@ export default function AboutSection() {
                 key={cert.title}
                 className={`rounded-2xl p-5 border-2 ${cert.color} relative overflow-hidden`}
               >
-                {/* Verified checkmark */}
                 <div className="absolute top-3 right-3">
                   <CheckCircle className="w-4 h-4 text-green-500" />
                 </div>
-
-                {/* Icon */}
                 <div
                   className={`w-12 h-12 ${cert.iconBg} rounded-xl flex items-center justify-center mb-4 text-2xl`}
                 >
                   {cert.icon}
                 </div>
-
                 <h4
                   className={`font-hindi font-bold text-sm mb-1 ${cert.labelColor}`}
                 >
@@ -189,8 +184,7 @@ export default function AboutSection() {
             ))}
           </div>
 
-          {/* Trust note */}
-          <div className="mt-6 bg-white/10 border border-brand-gold/30 rounded-xl p-4 text-center">
+          <div className="mt-6 bg-white/10 border border-brand-orange/30 rounded-xl p-4 text-center">
             <p className="font-hindi text-white font-semibold text-sm flex items-center justify-center gap-2">
               <span>🏆</span>
               हमारे सभी उत्पाद FSSAI, WHO-GMP और Ayush मंत्रालय द्वारा प्रमाणित हैं —
@@ -201,16 +195,15 @@ export default function AboutSection() {
 
         {/* Mission */}
         <div className="bg-white/10 rounded-2xl p-8 border border-white/20 text-center">
-          <p className="text-brand-gold font-hindi text-sm font-semibold uppercase tracking-widest mb-3">
+          <p className="text-brand-orange font-hindi text-sm font-semibold uppercase tracking-widest mb-3">
             हमारा मिशन
           </p>
           <h3 className="font-hindi-serif text-2xl font-bold text-white mb-4">
-            "स्वस्थ भारत, सुखी भारत"
+            "स्वस्थ भारत, सुखी परिवार"
           </h3>
           <p className="font-hindi text-white/80 max-w-xl mx-auto leading-relaxed">
-            हमारा सपना है कि भारत का हर पुरुष आयुर्वेद की शक्ति से अपना जीवन बेहतर बना
-            सके। हम अखिल भारतीय पुरुषों को सस्ती और प्रभावी आयुर्वेदिक दवाईयां उपलब्ध कराना
-            चाहते हैं।
+            हमारा सपना है कि भारत के हर परिवार को किफायती, प्रमाणित और उच्च गुणवत्ता
+            की दवाइयां आसानी से मिल सकें। UrmiWellness इसी सपने को साकार कर रहा है।
           </p>
         </div>
       </div>

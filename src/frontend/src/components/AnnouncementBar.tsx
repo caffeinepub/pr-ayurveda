@@ -36,11 +36,11 @@ export default function AnnouncementBar() {
   const ss = String(seconds % 60).padStart(2, "0");
 
   return (
-    <div className="bg-brand-gold text-white text-center py-2 px-4 text-sm font-hindi font-bold">
+    <div className="bg-brand-blue text-white text-center py-2 px-4 text-sm font-hindi font-bold">
       {settings.flashSaleEnabled ? (
         <span>
           ⚡ फ्लैश सेल! अभी ऑर्डर करें - ऑफर खत्म होने में:&nbsp;
-          <span className="inline-block bg-white text-brand-gold font-bold px-2 py-0.5 rounded tabular-nums text-sm">
+          <span className="inline-block bg-white text-brand-blue font-bold px-2 py-0.5 rounded tabular-nums text-sm">
             {hh}:{mm}:{ss}
           </span>
           &nbsp;| 📞 +91 92171 27566

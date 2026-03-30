@@ -5,60 +5,60 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "Playfair Display";
-  src: url("/assets/fonts/PlayfairDisplay.woff2") format("woff2");
-  font-weight: 400 800;
+  font-family: "Plus Jakarta Sans";
+  src: url("/assets/fonts/PlusJakartaSans.woff2") format("woff2");
+  font-weight: 300 700;
   font-display: swap;
 }
 
 @layer base {
   :root {
     --radius: 0.5rem;
-    /* Warm cream background */
-    --background: 0.961 0.018 80;
-    --foreground: 0.13 0.012 45;
-    /* Card - slightly darker cream */
-    --card: 0.945 0.022 78;
-    --card-foreground: 0.13 0.012 45;
-    --popover: 0.961 0.018 80;
-    --popover-foreground: 0.13 0.012 45;
-    /* Primary - dark forest green */
-    --primary: 0.27 0.065 152;
-    --primary-foreground: 0.96 0.01 80;
+    /* Clean white background */
+    --background: 0.99 0.004 240;
+    --foreground: 0.15 0.02 250;
+    /* Card - very light blue-grey */
+    --card: 0.97 0.008 240;
+    --card-foreground: 0.15 0.02 250;
+    --popover: 0.99 0.004 240;
+    --popover-foreground: 0.15 0.02 250;
+    /* Primary - deep medical blue */
+    --primary: 0.32 0.14 255;
+    --primary-foreground: 0.99 0.002 240;
     /* Secondary */
-    --secondary: 0.91 0.03 82;
-    --secondary-foreground: 0.27 0.065 152;
+    --secondary: 0.94 0.015 240;
+    --secondary-foreground: 0.32 0.14 255;
     /* Muted */
-    --muted: 0.92 0.02 80;
-    --muted-foreground: 0.45 0.022 60;
-    /* Accent - gold */
-    --accent: 0.68 0.11 75;
-    --accent-foreground: 0.13 0.012 45;
+    --muted: 0.93 0.012 240;
+    --muted-foreground: 0.5 0.04 250;
+    /* Accent - vibrant orange */
+    --accent: 0.65 0.16 45;
+    --accent-foreground: 0.99 0.002 240;
     /* Destructive */
     --destructive: 0.577 0.245 27.325;
     --destructive-foreground: 0.985 0 0;
-    --border: 0.88 0.025 80;
-    --input: 0.88 0.025 80;
-    --ring: 0.68 0.11 75;
-    --chart-1: 0.646 0.222 41.116;
-    --chart-2: 0.6 0.118 184.704;
-    --chart-3: 0.398 0.07 227.392;
-    --chart-4: 0.828 0.189 84.429;
-    --chart-5: 0.769 0.188 70.08;
-    --sidebar: 0.27 0.065 152;
-    --sidebar-foreground: 0.96 0.01 80;
-    --sidebar-primary: 0.68 0.11 75;
-    --sidebar-primary-foreground: 0.13 0.012 45;
-    --sidebar-accent: 0.35 0.07 152;
-    --sidebar-accent-foreground: 0.96 0.01 80;
-    --sidebar-border: 0.35 0.05 152;
-    --sidebar-ring: 0.68 0.11 75;
+    --border: 0.9 0.015 240;
+    --input: 0.9 0.015 240;
+    --ring: 0.32 0.14 255;
+    --chart-1: 0.55 0.18 255;
+    --chart-2: 0.65 0.16 45;
+    --chart-3: 0.5 0.14 190;
+    --chart-4: 0.7 0.18 142;
+    --chart-5: 0.75 0.15 70;
+    --sidebar: 0.22 0.1 255;
+    --sidebar-foreground: 0.97 0.006 240;
+    --sidebar-primary: 0.65 0.16 45;
+    --sidebar-primary-foreground: 0.15 0.02 250;
+    --sidebar-accent: 0.28 0.1 255;
+    --sidebar-accent-foreground: 0.97 0.006 240;
+    --sidebar-border: 0.3 0.08 255;
+    --sidebar-ring: 0.65 0.16 45;
     /* Custom brand tokens */
-    --green-dark: 0.25 0.07 152;
-    --green-footer: 0.22 0.065 152;
-    --gold: 0.68 0.11 75;
-    --cream: 0.961 0.018 80;
-    --cream-card: 0.945 0.022 78;
+    --blue-dark: 0.22 0.1 255;
+    --blue-footer: 0.18 0.09 255;
+    --orange: 0.65 0.16 45;
+    --blue-light: 0.94 0.015 240;
+    --blue-card: 0.97 0.008 240;
   }
 
   * {
@@ -66,7 +66,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: "Noto Sans Devanagari", "General Sans", sans-serif;
+    font-family: "Noto Sans Devanagari", "Plus Jakarta Sans", sans-serif;
   }
   h1,
   h2,
@@ -74,34 +74,34 @@
   h4,
   h5,
   h6 {
-    font-family: "Noto Serif Devanagari", "Playfair Display", serif;
+    font-family: "Noto Serif Devanagari", "Plus Jakarta Sans", sans-serif;
   }
 }
 
 @layer utilities {
   .font-hindi-serif {
-    font-family: "Noto Serif Devanagari", "Playfair Display", serif;
+    font-family: "Noto Serif Devanagari", "Plus Jakarta Sans", sans-serif;
   }
   .font-hindi-sans {
     font-family: "Noto Sans Devanagari", sans-serif;
   }
   .bg-green-brand {
-    background-color: oklch(var(--green-dark));
+    background-color: oklch(var(--blue-dark));
   }
   .bg-green-footer {
-    background-color: oklch(var(--green-footer));
+    background-color: oklch(var(--blue-footer));
   }
   .text-gold {
-    color: oklch(var(--gold));
+    color: oklch(var(--orange));
   }
   .bg-gold {
-    background-color: oklch(var(--gold));
+    background-color: oklch(var(--orange));
   }
   .border-gold {
-    border-color: oklch(var(--gold));
+    border-color: oklch(var(--orange));
   }
   .text-green-brand {
-    color: oklch(var(--green-dark));
+    color: oklch(var(--blue-dark));
   }
 }
 

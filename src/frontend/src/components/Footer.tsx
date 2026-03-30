@@ -34,7 +34,6 @@ export default function Footer({ onAdminOpen }: FooterProps) {
     if (el) el.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Secret: click copyright text 5 times quickly to open admin
   const handleSecretClick = () => {
     clickCountRef.current += 1;
     if (clickTimerRef.current) clearTimeout(clickTimerRef.current);
@@ -48,28 +47,29 @@ export default function Footer({ onAdminOpen }: FooterProps) {
   };
 
   return (
-    <footer className="bg-brand-green text-white">
+    <footer className="bg-brand-blue-dark text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-brand-gold rounded-full flex items-center justify-center">
-                <span className="text-white text-xs font-bold">PR</span>
+              <div className="w-10 h-10 bg-brand-orange rounded-full flex items-center justify-center">
+                <span className="text-white text-xs font-bold">UW</span>
               </div>
               <div>
-                <div className="font-playfair font-bold text-xl tracking-wider">
-                  PR AYURVEDA
+                <div className="font-jakarta font-extrabold text-xl tracking-tight">
+                  UrmiWellness
                 </div>
                 <div className="text-white/70 text-xs font-hindi">
-                  शुद्ध आयुर्वेद, संपूर्ण स्वास्थ्य
+                  स्वास्थ्य का विश्वस्त साथी
                 </div>
               </div>
             </div>
             <p className="font-hindi text-white/70 text-sm leading-relaxed mb-4 max-w-xs">
-              हम पुरुषों के स्वास्थ्य के लिए 100% प्राकृतिक आयुर्वेदिक उत्पाद बनाते हैं।
+              हम आपके स्वास्थ्य के लिए 100% प्रमाणित दवाइयां और आयुर्वेदिक उत्पाद उपलब्ध
+              कराते हैं।
             </p>
             <div className="flex items-start gap-2 mb-3">
-              <MapPin className="w-4 h-4 text-brand-gold mt-0.5 shrink-0" />
+              <MapPin className="w-4 h-4 text-brand-orange mt-0.5 shrink-0" />
               <div className="font-hindi text-white/80 text-sm leading-relaxed">
                 ओखला फेज 3, दिल्ली
                 <br />
@@ -79,10 +79,10 @@ export default function Footer({ onAdminOpen }: FooterProps) {
               </div>
             </div>
             <div className="flex items-center gap-2 mb-5">
-              <Phone className="w-4 h-4 text-brand-gold shrink-0" />
+              <Phone className="w-4 h-4 text-brand-orange shrink-0" />
               <a
                 href="tel:+919217127566"
-                className="font-hindi text-white/80 text-sm hover:text-brand-gold transition-colors"
+                className="font-hindi text-white/80 text-sm hover:text-brand-orange transition-colors"
               >
                 +91 92171 27566
               </a>
@@ -94,7 +94,7 @@ export default function Footer({ onAdminOpen }: FooterProps) {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 hover:bg-brand-gold rounded-full flex items-center justify-center transition-colors"
+                  className="w-9 h-9 bg-white/10 hover:bg-brand-orange rounded-full flex items-center justify-center transition-colors"
                   aria-label={label}
                 >
                   <Icon className="w-4 h-4" />
@@ -104,21 +104,21 @@ export default function Footer({ onAdminOpen }: FooterProps) {
           </div>
 
           <div>
-            <h4 className="font-hindi-serif font-bold text-brand-gold mb-4">
+            <h4 className="font-hindi-serif font-bold text-brand-orange mb-4">
               त्वरित लिंक
             </h4>
             <ul className="space-y-2">
               {[
                 { label: "होम", href: "#home" },
                 { label: "उत्पाद", href: "#products" },
-                { label: "लाभ", href: "#benefits" },
+                { label: "श्रेणियां", href: "#categories" },
                 { label: "समीक्षाएं", href: "#testimonials" },
               ].map((link) => (
                 <li key={link.href}>
                   <button
                     type="button"
                     onClick={() => scrollTo(link.href)}
-                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors"
+                    className="font-hindi text-white/70 hover:text-brand-orange text-sm transition-colors"
                   >
                     {link.label}
                   </button>
@@ -128,16 +128,16 @@ export default function Footer({ onAdminOpen }: FooterProps) {
           </div>
 
           <div>
-            <h4 className="font-hindi-serif font-bold text-brand-gold mb-4">
+            <h4 className="font-hindi-serif font-bold text-brand-orange mb-4">
               श्रेणियाँ
             </h4>
             <ul className="space-y-2">
               {[
-                "यौन स्वास्थ्य",
-                "शक्ति वर्धक",
-                "तनाव मुक्ति",
-                "हार्मोन बैलेंस",
-                "स्टैमिना बूस्टर",
+                "दवाइयां",
+                "विटामिन & सप्लीमेंट",
+                "आयुर्वेदिक",
+                "हेल्थ फूड",
+                "लैब टेस्ट",
               ].map((cat) => (
                 <li key={cat}>
                   <span className="font-hindi text-white/70 text-sm">
@@ -149,7 +149,7 @@ export default function Footer({ onAdminOpen }: FooterProps) {
           </div>
 
           <div>
-            <h4 className="font-hindi-serif font-bold text-brand-gold mb-4">
+            <h4 className="font-hindi-serif font-bold text-brand-orange mb-4">
               न्यूज़लेटर
             </h4>
             <p className="font-hindi text-white/70 text-sm mb-4">
@@ -166,14 +166,14 @@ export default function Footer({ onAdminOpen }: FooterProps) {
               />
               <Button
                 size="sm"
-                className="bg-brand-gold hover:bg-brand-gold-light text-white font-hindi"
+                className="bg-brand-orange hover:bg-brand-orange-light text-white font-hindi"
                 data-ocid="footer.newsletter.submit_button"
               >
                 भेजें
               </Button>
             </div>
             <div className="mt-6">
-              <h4 className="font-hindi-serif font-bold text-brand-gold mb-3">
+              <h4 className="font-hindi-serif font-bold text-brand-orange mb-3">
                 सहायता
               </h4>
               <ul className="space-y-1">
@@ -181,7 +181,7 @@ export default function Footer({ onAdminOpen }: FooterProps) {
                   <button
                     type="button"
                     onClick={() => scrollTo("#faq")}
-                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors"
+                    className="font-hindi text-white/70 hover:text-brand-orange text-sm transition-colors"
                   >
                     FAQ
                   </button>
@@ -190,7 +190,7 @@ export default function Footer({ onAdminOpen }: FooterProps) {
                   <button
                     type="button"
                     onClick={() => setReturnPolicyOpen(true)}
-                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors hover:underline"
+                    className="font-hindi text-white/70 hover:text-brand-orange text-sm transition-colors hover:underline"
                     data-ocid="footer.return_policy.link"
                   >
                     रिटर्न पॉलिसी
@@ -205,7 +205,7 @@ export default function Footer({ onAdminOpen }: FooterProps) {
                   <button
                     type="button"
                     onClick={() => scrollTo("#contact")}
-                    className="font-hindi text-white/70 hover:text-brand-gold text-sm transition-colors"
+                    className="font-hindi text-white/70 hover:text-brand-orange text-sm transition-colors"
                   >
                     संपर्क करें
                   </button>
@@ -218,13 +218,12 @@ export default function Footer({ onAdminOpen }: FooterProps) {
 
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          {/* Secret 5-click to open admin — no visible indicator */}
           <button
             type="button"
             className="font-hindi text-white/60 text-sm text-center cursor-default select-none bg-transparent border-0 p-0"
             onClick={handleSecretClick}
           >
-            © {year} PR Ayurveda. सर्वाधिकार सुरक्षित।
+            © {year} UrmiWellness. सर्वाधिकार सुरक्षित।
           </button>
           <p className="text-white/50 text-sm text-center">
             Built with ❤️ using{" "}
@@ -232,7 +231,7 @@ export default function Footer({ onAdminOpen }: FooterProps) {
               href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-brand-gold hover:text-brand-gold-light transition-colors"
+              className="text-brand-orange hover:text-brand-orange-light transition-colors"
             >
               caffeine.ai
             </a>

@@ -9,6 +9,7 @@ import ConsultationForm from "./components/ConsultationForm";
 import FAQSection from "./components/FAQSection";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
+import HealthCategoriesSection from "./components/HealthCategoriesSection";
 import HeroSection from "./components/HeroSection";
 import HowItWorks from "./components/HowItWorks";
 import MyOrders from "./components/MyOrders";
@@ -68,6 +69,7 @@ export default function App() {
           onShopClick={scrollToProducts}
           onConsultClick={scrollToContact}
         />
+        <HealthCategoriesSection />
         <TrustBadges />
         <WhyChooseUs />
         <PromoBannersDisplay />

@@ -82,7 +82,7 @@ export default function ReturnPolicyModal({
             रिटर्न और रिफंड पॉलिसी
           </DialogTitle>
           <p className="font-hindi text-sm text-muted-foreground mt-1">
-            PR Ayurveda की वापसी नीति — हम आपकी संतुष्टि को सर्वोच्च प्राथमिकता देते हैं
+            UrmiWellness की वापसी नीति — हम आपकी संतुष्टि को सर्वोच्च प्राथमिकता देते हैं
           </p>
         </DialogHeader>
 

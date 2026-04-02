@@ -35,7 +35,7 @@ export default function WhyChooseUs() {
               हमारा वादा
             </p>
             <h2 className="font-hindi-serif text-3xl md:text-4xl font-bold text-brand-green leading-tight">
-              क्यों चुनें PR Ayurveda?
+              क्यों चुनें UrmiWellness?
             </h2>
             <p className="text-muted-foreground font-hindi mt-4 leading-relaxed">
               हम प्रकृति की शक्ति को आधुनिक विज्ञान के साथ जोड़कर सर्वोत्तम आयुर्वेदिक उत्पाद

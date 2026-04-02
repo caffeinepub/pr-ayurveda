@@ -85,7 +85,7 @@ export default function ProductDetailModal({
 
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(
-      `यह देखें: ${product.name} - PR Ayurveda ${window.location.href}`,
+      `यह देखें: ${product.name} - UrmiWellness ${window.location.href}`,
     );
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };

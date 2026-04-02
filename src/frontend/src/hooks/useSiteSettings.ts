@@ -31,7 +31,7 @@ const DEFAULTS: SiteSettings = {
     "⚡ फ्लैश सेल! अभी ऑर्डर करें - ऑफर खत्म होने में: | 📞 +91 92171 27566",
   flashSaleEnabled: true,
   whatsappNumber: "919217127566",
-  discountCode: "PRAYUR100",
+  discountCode: "URMI100",
   discountAmount: 100,
   coupons: [],
   promoBanners: [],

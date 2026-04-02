@@ -66,7 +66,7 @@ export default function WelcomePopup() {
               </p>
               <div className="bg-orange-50 border border-orange-200 rounded-lg px-4 py-2 mb-3 inline-block">
                 <span className="font-hindi font-bold text-orange-700 text-base tracking-widest">
-                  कोड: PRAYUR100
+                  कोड: URMI100
                 </span>
               </div>
               <p className="font-hindi text-sm text-muted-foreground mb-5">

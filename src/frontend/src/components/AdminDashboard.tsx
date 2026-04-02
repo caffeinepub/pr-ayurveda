@@ -1142,7 +1142,7 @@ function SettingsTab() {
               data-ocid="settings.input"
               value={discountCode}
               onChange={(e) => setDiscountCode(e.target.value.toUpperCase())}
-              placeholder="PRAYUR100"
+              placeholder="URMI100"
               className="font-hindi text-sm border"
               style={inputStyle}
             />

@@ -116,7 +116,7 @@ export default function ProductsSection({
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src =
-                            "https://placehold.co/400x400/166534/ffffff?text=PR+Ayurveda";
+                            "https://placehold.co/400x400/1e40af/ffffff?text=UrmiWellness";
                         }}
                       />
                       <Badge

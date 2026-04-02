@@ -18,6 +18,7 @@ import PromoBannersDisplay from "./components/PromoBannersDisplay";
 import SocialPromoSection from "./components/SocialPromoSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import TrustBadges from "./components/TrustBadges";
+import VedCareLandingPage from "./components/VedCareLandingPage";
 import WelcomePopup from "./components/WelcomePopup";
 import WhatsAppButton from "./components/WhatsAppButton";
 import WhyChooseUs from "./components/WhyChooseUs";
@@ -31,6 +32,7 @@ export default function App() {
   const [ordersOpen, setOrdersOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showVedCare, setShowVedCare] = useState(false);
   const cart = useLocalCart();
 
   if (adminOpen) {
@@ -40,6 +42,10 @@ export default function App() {
         <Toaster position="top-right" richColors />
       </>
     );
+  }
+
+  if (showVedCare) {
+    return <VedCareLandingPage />;
   }
 
   const scrollToProducts = () => {
@@ -84,6 +90,72 @@ export default function App() {
         <TestimonialsSection />
         <FAQSection />
         <ConsultationForm />
+
+        {/* VedCare Power+ Product Banner */}
+        <div
+          style={{
+            background: "#0b1d13",
+            padding: "30px 20px",
+            textAlign: "center",
+          }}
+        >
+          <p
+            style={{
+              color: "#27ae60",
+              fontSize: "0.85rem",
+              letterSpacing: "2px",
+              textTransform: "uppercase",
+              marginBottom: "8px",
+            }}
+          >
+            विशेष उत्पाद
+          </p>
+          <h2
+            style={{
+              color: "#2ecc71",
+              fontSize: "1.6rem",
+              marginBottom: "8px",
+              fontFamily: "'Noto Sans Devanagari', Arial, sans-serif",
+            }}
+          >
+            🔥 VedCare Power+ — Ayurvedic Energy Capsule
+          </h2>
+          <p
+            style={{
+              color: "#ccc",
+              marginBottom: "5px",
+              fontFamily: "'Noto Sans Devanagari', Arial, sans-serif",
+            }}
+          >
+            थकान, कमजोरी और स्टैमिना की कमी से छुटकारा पाएं
+          </p>
+          <p
+            style={{
+              color: "#f39c12",
+              fontSize: "1.4rem",
+              fontWeight: "bold",
+              marginBottom: "15px",
+            }}
+          >
+            ₹699 + Free Delivery
+          </p>
+          <button
+            type="button"
+            onClick={() => setShowVedCare(true)}
+            style={{
+              background: "#2ecc71",
+              color: "#fff",
+              padding: "12px 30px",
+              border: "none",
+              fontSize: "16px",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            Order Now →
+          </button>
+        </div>
       </main>
       <SocialPromoSection />
       <Footer onAdminOpen={() => setAdminOpen(true)} />
